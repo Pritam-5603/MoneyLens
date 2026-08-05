@@ -50,7 +50,7 @@ MoneyLens
 {% block content %}
 
 <!-- Hero Section will come here -->
-<div class="hero-section">
+<section class="hero-section">
 
     <div class="hero-content">
 
@@ -59,7 +59,7 @@ MoneyLens
         <p>Track expenses, monitor budgets, visualize spending trends,
              and achieve your financial goals with one simple dashboard.</p>
 
-        <a href="{{ url_for('register') }}" class="Primary-button">Get Started</a>
+        <a href="{{ url_for('register') }}" class="primary-button">Get Started</a>
         <a href="#features" class="hero-button">Learn More</a>
 
     </div>
@@ -70,27 +70,180 @@ MoneyLens
         <img src="{{ url_for('static', filename='images/hero-image.png') }}" alt="Hero Image">
 
     </div>
-</div>
+</section>
 <!--hero section end here-->
 
-{% endblock %}
 
-
-{% block content %}
  <!---Features Section will come here--->  
+ <section id="features" class="features-section">
+
+    <div class="features-container">
+
+        <h2>Everything You Need to Manage Your Money</h2>
+        <p class="features-description">
+        Take control of your finances with powerful tools designed to help you save, spend, and grow smarter.
+        </p>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <img src="{{ url_for('static', filename='images/feature1.png') }}" alt="Feature 1">
+                <h3>Expense Tracking</h3>
+                <p>Track every expense with smart categories and stay in complete control of your spending.</p>
+            </div>
+
+            <div class="feature-card">
+                <img src="{{ url_for('static', filename='images/feature2.png') }}" alt="Feature 2">
+                <h3>Budget Monitoring</h3>
+                <p>Set budgets for different categories and monitor your spending to stay on track.</p>
+            </div>
+
+            <div class="feature-card">
+                <img src="{{ url_for('static', filename='images/feature3.png') }}" alt="Feature 3">
+                <h3>Spending Trends</h3>
+                <p>Visualize your spending patterns over time with interactive charts and graphs.</p>
+            </div>
+
+        </div>
+
+    </div>
+ </section>
  <!---Features Section will end here---> 
-{% endblock %}
 
-{% block content %}
-    
-{% endblock %}
+<!--Dashboard preview-->
+<section id="dashboard-preview" class="dashboard-preview-section">
 
-<!---About Section will come here--->
-{% block content %}
-    
+    <div class="dashboard-preview-container">
+
+        <h2>See MoneyLens in Action</h2>
+        <p class="dashboard-preview-description">
+            Experience a clean and intuitive dashboard that helps you track expenses, 
+            monitor budgets, and gain meaningful financial insights—all in one place.
+        </p>
+
+        <div class="dashboard-preview-image">
+
+            <!-- Placeholder for dashboard preview image -->
+            <img src="{{ url_for('static', filename='images/dashboard-preview.png') }}" alt="Dashboard Preview">
+
+        </div>
+
+    </div>
+</section>
+<!--Dashboard preview end here-->
+
+<!--Why choose money lens-->
+<section id="why-choose" class="why-choose-section">
+
+    <div class="why-choose-container">
+
+        <h2>Why MoneyLens Stands Out</h2>
+        <p class="why-choose-description">
+           Designed to help you spend smarter, save better, 
+           and understand your finances through powerful yet simple tools.
+        </p>
+
+        <div class="why-choose-grid">
+
+            <div class="why-choose-card">
+                <img src="{{ url_for('static', filename='images/why1.png') }}" alt="Why 1">
+                <h3>Intuitive Design</h3>
+                <p>Navigate effortlessly through a clean and organized dashboard.</p>
+            </div>
+
+            <div class="why-choose-card">
+                <img src="{{ url_for('static', filename='images/why2.png') }}" alt="Why 2">
+                <h3>AI Powered Insights</h3>
+                <p>Gain a complete understanding of your financial health with detailed reports.</p>
+            </div>
+
+            <div class="why-choose-card">
+                <img src="{{ url_for('static', filename='images/why3.png') }}" alt="Why 3">
+                <h3>Secure & Private</h3>
+                <p>Your data is protected with top-notch security measures and privacy controls.</p>
+            </div>
+
+            <div class="why-choose-card">
+                <img src="{{ url_for('static', filename='images/why4.png') }}" alt="Why 4">
+                <h3>Dark & Light Themes</h3>
+                <p>Choose the theme that best suits your preferences and reduces eye strain.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>    
+
+<!--How MoneyLens Works-->
+<section id="how-it-works" class="how-it-works-section">
+
+    <div class="how-it-works-container">
+
+        <h2>How MoneyLens Works</h2>
+        <p class="how-it-works-description">
+            Get started in just a few simple steps and take control of your finances today.
+        </p>
+
+        <div class="how-it-works-grid">
+
+            <div class="how-it-works-card">
+                <img src="{{ url_for('static', filename='images/step1.png') }}" alt="Step 1">
+                <h3>Sign Up</h3>
+                <p>Create your free account and set up your profile.</p>
+            </div>
+
+            <div class="how-it-works-card">
+                <img src="{{ url_for('static', filename='images/step2.png') }}" alt="Step 2">
+                <h3>Add Income and Expenses</h3>
+                <p>Record your income and expenses, organize them into categories,
+                     and keep every transaction in one place.</p>
+            </div>
+
+            <div class="how-it-works-card">
+                <img src="{{ url_for('static', filename='images/step3.png') }}" alt="Step 3">
+                <h3>Track & Analyze</h3>
+                <p>Monitor your spending, set budgets, and gain insights into your finances.</p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+<!--How MoneyLens Works end here-->
+
+
+<!--Call to Action-->
+<section id="cta" class="cta-section">
+
+    <div class="cta-container">
+
+        <h2>Start Taking Control of Your Money Today</h2>
+        <p class="cta-description">
+            Join MoneyLens and discover a smarter way to track expenses, 
+            manage budgets, and achieve your financial goals.
+        </p>
+
+        <a href="{{ url_for('register') }}" class="primary-button">Get Started for Free</a>
+        <a href="#features" class="cta-button">Learn More</a>
+    </div>
+</section>
+<!--Call to Action end here-->
 {% endblock %}
 {% block footer %}
+<!-- Footer will come here -->
+ <footer class="footer">
 
-<!-- Footer will come later -->
+    <div class="footer-container">
 
+        <div class="footer-brand">
+            <a href="{{ url_for('index') }}" class="footer-logo">
+                [Logo] MoneyLens
+            </a>
+        </div>
+
+        <p class="footer-copy">&copy; 2024 MoneyLens. All rights reserved.</p>
+
+    </div>
+ </footer>
+ <!-- Footer end here -->
 {% endblock %}
