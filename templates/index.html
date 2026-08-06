@@ -35,7 +35,7 @@ MoneyLens
                 Login
             </a>
 
-            <a href="{{ url_for('register') }}" class="navbar-button">
+            <a href="{{ url_for('register') }}" class="primary-button">
                 Get Started
             </a>
 
@@ -50,6 +50,7 @@ MoneyLens
 {% block content %}
 
 <!-- Hero Section will come here -->
+<div class="hero-section-container">
 <section class="hero-section">
 
     <div class="hero-content">
@@ -71,6 +72,7 @@ MoneyLens
 
     </div>
 </section>
+</div>
 <!--hero section end here-->
 
 
@@ -83,7 +85,8 @@ MoneyLens
         <p class="features-description">
         Take control of your finances with powerful tools designed to help you save, spend, and grow smarter.
         </p>
-
+        <br>
+        <br>
         <div class="features-grid">
 
             <div class="feature-card">
@@ -111,20 +114,45 @@ MoneyLens
  <!---Features Section will end here---> 
 
 <!--Dashboard preview-->
-<section id="dashboard-preview" class="dashboard-preview-section">
+<section class="dashboard-preview-section">
+    <div class="container">
 
-    <div class="dashboard-preview-container">
+        <div class="dashboard-content">
 
-        <h2>See MoneyLens in Action</h2>
-        <p class="dashboard-preview-description">
-            Experience a clean and intuitive dashboard that helps you track expenses, 
-            monitor budgets, and gain meaningful financial insights—all in one place.
-        </p>
+            <div class="dashboard-text">
+                <span class="section-tag">
+                    Dashboard Preview
+                </span>
 
-        <div class="dashboard-preview-image">
+                <h2>
+                    See MoneyLens in Action
+                </h2>
 
-            <!-- Placeholder for dashboard preview image -->
-            <img src="{{ url_for('static', filename='images/dashboard-preview.png') }}" alt="Dashboard Preview">
+                <p>
+                    Experience a beautiful financial dashboard that helps you
+                    monitor expenses, track budgets, analyze trends, and make
+                    smarter financial decisions—all in one intuitive place.
+                </p>
+
+                <ul class="dashboard-features">
+                    <li>✔ Live Expense Tracking</li>
+                    <li>✔ AI Powered Insights</li>
+                    <li>✔ Interactive Charts</li>
+                    <li>✔ Smart Budget Monitoring</li>
+                </ul>
+
+                <a href="#" class="btn btn-primary">
+                    Explore Dashboard
+                </a>
+
+            </div>
+
+            <div class="dashboard-image">
+
+                <img src="{{ url_for('static', filename='images/dashboard-preview.png') }}"
+                     alt="MoneyLens Dashboard">
+
+            </div>
 
         </div>
 
