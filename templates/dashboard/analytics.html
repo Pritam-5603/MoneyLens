@@ -1,0 +1,530 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<!-- ==========================================
+     ANALYTICS HEADER
+========================================== -->
+
+<div class="analytics-header">
+
+    <div class="analytics-header-left">
+        <h1 class="analytics-title">Financial Analytics</h1>
+        <p class="analytics-subtitle">
+            Understand your spending, income and savings patterns.
+        </p>
+    </div>
+
+    <div class="analytics-period">
+        <i class="fas fa-calendar-alt"></i>
+
+        <select id="analyticsPeriod">
+            <option value="6m">Last 6 Months</option>
+            <option value="3m">Last 3 Months</option>
+            <option value="1y">Last 1 Year</option>
+            <option value="all">All Time</option>
+        </select>
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     ANALYTICS OVERVIEW
+========================================== -->
+
+<div class="analytics-overview">
+
+    <!-- Income -->
+
+    <div class="analytics-stat-card">
+
+        <div class="analytics-stat-header">
+
+            <div>
+                <span class="analytics-stat-label">
+                    Total Income
+                </span>
+
+                <strong class="analytics-stat-value">
+                    ₹1,85,000
+                </strong>
+            </div>
+
+            <div class="analytics-stat-icon income">
+                <i class="fas fa-arrow-up"></i>
+            </div>
+
+        </div>
+
+        <div class="analytics-stat-footer positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>8.2%</span>
+            <small>vs previous period</small>
+        </div>
+
+    </div>
+
+
+    <!-- Expenses -->
+
+    <div class="analytics-stat-card">
+
+        <div class="analytics-stat-header">
+
+            <div>
+                <span class="analytics-stat-label">
+                    Total Expenses
+                </span>
+
+                <strong class="analytics-stat-value">
+                    ₹72,400
+                </strong>
+            </div>
+
+            <div class="analytics-stat-icon expense">
+                <i class="fas fa-arrow-down"></i>
+            </div>
+
+        </div>
+
+        <div class="analytics-stat-footer negative">
+            <i class="fas fa-arrow-down"></i>
+            <span>3.4%</span>
+            <small>vs previous period</small>
+        </div>
+
+    </div>
+
+
+    <!-- Savings -->
+
+    <div class="analytics-stat-card">
+
+        <div class="analytics-stat-header">
+
+            <div>
+                <span class="analytics-stat-label">
+                    Total Savings
+                </span>
+
+                <strong class="analytics-stat-value">
+                    ₹1,12,600
+                </strong>
+            </div>
+
+            <div class="analytics-stat-icon savings">
+                <i class="fas fa-piggy-bank"></i>
+            </div>
+
+        </div>
+
+        <div class="analytics-stat-footer positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>14.1%</span>
+            <small>vs previous period</small>
+        </div>
+
+    </div>
+
+
+    <!-- Savings Rate -->
+
+    <div class="analytics-stat-card">
+
+        <div class="analytics-stat-header">
+
+            <div>
+                <span class="analytics-stat-label">
+                    Savings Rate
+                </span>
+
+                <strong class="analytics-stat-value">
+                    60.9%
+                </strong>
+            </div>
+
+            <div class="analytics-stat-icon rate">
+                <i class="fas fa-chart-line"></i>
+            </div>
+
+        </div>
+
+        <div class="analytics-stat-footer positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>5.6%</span>
+            <small>vs previous period</small>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     INCOME VS EXPENSES
+========================================== -->
+
+<div class="analytics-chart-grid">
+
+    <div class="dashboard-card analytics-chart-card analytics-large-chart">
+
+        <div class="dashboard-card-header">
+
+            <div>
+                <h3>Income vs Expenses</h3>
+                <p>Monthly financial performance</p>
+            </div>
+
+            <span class="analytics-chart-badge">
+                Monthly
+            </span>
+
+        </div>
+
+        <div class="analytics-chart-container">
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <!-- Spending Breakdown -->
+
+    <div class="dashboard-card analytics-chart-card">
+
+        <div class="dashboard-card-header">
+
+            <div>
+                <h3>Spending Breakdown</h3>
+                <p>Where your money goes</p>
+            </div>
+
+        </div>
+
+        <div class="analytics-donut-container">
+
+            <canvas id="spendingBreakdownChart"></canvas>
+
+            <div class="analytics-donut-center">
+                <strong>₹72.4k</strong>
+                <span>Total spent</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     SECOND ANALYTICS ROW
+========================================== -->
+
+<div class="analytics-chart-grid">
+
+    <!-- Income Sources -->
+
+    <div class="dashboard-card analytics-chart-card">
+
+        <div class="dashboard-card-header">
+
+            <div>
+                <h3>Income Sources</h3>
+                <p>Where your income comes from</p>
+            </div>
+
+        </div>
+
+        <div class="analytics-chart-container analytics-small-chart">
+            <canvas id="incomeSourcesChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <!-- Monthly Savings -->
+
+    <div class="dashboard-card analytics-chart-card analytics-large-chart">
+
+        <div class="dashboard-card-header">
+
+            <div>
+                <h3>Monthly Savings</h3>
+                <p>Track your savings progress</p>
+            </div>
+
+        </div>
+
+        <div class="analytics-chart-container">
+            <canvas id="monthlySavingsChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     SPENDING CATEGORIES
+========================================== -->
+
+<div class="dashboard-card analytics-categories-card">
+
+    <div class="dashboard-card-header">
+
+        <div>
+            <h3>Spending by Category</h3>
+            <p>Your biggest spending areas</p>
+        </div>
+
+    </div>
+
+
+    <div class="analytics-category-list">
+
+        <!-- Housing -->
+
+        <div class="analytics-category">
+
+            <div class="analytics-category-info">
+
+                <div class="analytics-category-icon housing">
+                    <i class="fas fa-home"></i>
+                </div>
+
+                <div>
+                    <strong>Housing</strong>
+                    <span>Rent & utilities</span>
+                </div>
+
+            </div>
+
+            <div class="analytics-category-progress">
+
+                <div class="analytics-progress-bar">
+                    <span style="width: 72%;"></span>
+                </div>
+
+                <strong>₹21,500</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Food -->
+
+        <div class="analytics-category">
+
+            <div class="analytics-category-info">
+
+                <div class="analytics-category-icon food">
+                    <i class="fas fa-utensils"></i>
+                </div>
+
+                <div>
+                    <strong>Food & Dining</strong>
+                    <span>Restaurants & groceries</span>
+                </div>
+
+            </div>
+
+            <div class="analytics-category-progress">
+
+                <div class="analytics-progress-bar">
+                    <span style="width: 48%;"></span>
+                </div>
+
+                <strong>₹14,200</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Transport -->
+
+        <div class="analytics-category">
+
+            <div class="analytics-category-info">
+
+                <div class="analytics-category-icon transport">
+                    <i class="fas fa-car"></i>
+                </div>
+
+                <div>
+                    <strong>Transport</strong>
+                    <span>Travel & fuel</span>
+                </div>
+
+            </div>
+
+            <div class="analytics-category-progress">
+
+                <div class="analytics-progress-bar">
+                    <span style="width: 32%;"></span>
+                </div>
+
+                <strong>₹8,400</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Shopping -->
+
+        <div class="analytics-category">
+
+            <div class="analytics-category-info">
+
+                <div class="analytics-category-icon shopping">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+
+                <div>
+                    <strong>Shopping</strong>
+                    <span>Personal purchases</span>
+                </div>
+
+            </div>
+
+            <div class="analytics-category-progress">
+
+                <div class="analytics-progress-bar">
+                    <span style="width: 26%;"></span>
+                </div>
+
+                <strong>₹7,100</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Entertainment -->
+
+        <div class="analytics-category">
+
+            <div class="analytics-category-info">
+
+                <div class="analytics-category-icon entertainment">
+                    <i class="fas fa-film"></i>
+                </div>
+
+                <div>
+                    <strong>Entertainment</strong>
+                    <span>Movies & subscriptions</span>
+                </div>
+
+            </div>
+
+            <div class="analytics-category-progress">
+
+                <div class="analytics-progress-bar">
+                    <span style="width: 18%;"></span>
+                </div>
+
+                <strong>₹4,800</strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     FINANCIAL INSIGHTS
+========================================== -->
+
+<div class="analytics-insights">
+
+    <div class="analytics-section-title">
+        <h2>Financial Insights</h2>
+        <p>Highlights from your recent activity</p>
+    </div>
+
+
+    <div class="analytics-insight-grid">
+
+        <!-- Insight 1 -->
+
+        <div class="analytics-insight-card">
+
+            <div class="analytics-insight-icon green">
+                <i class="fas fa-piggy-bank"></i>
+            </div>
+
+            <div>
+                <span class="analytics-insight-label">
+                    Best Achievement
+                </span>
+
+                <h3>Great savings!</h3>
+
+                <p>
+                    You saved more than 60% of your income
+                    during this period.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Insight 2 -->
+
+        <div class="analytics-insight-card">
+
+            <div class="analytics-insight-icon purple">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+
+            <div>
+                <span class="analytics-insight-label">
+                    Biggest Category
+                </span>
+
+                <h3>Housing</h3>
+
+                <p>
+                    Housing accounts for the largest part
+                    of your monthly expenses.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Insight 3 -->
+
+        <div class="analytics-insight-card">
+
+            <div class="analytics-insight-icon orange">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+
+            <div>
+                <span class="analytics-insight-label">
+                    Recommendation
+                </span>
+
+                <h3>Watch dining expenses</h3>
+
+                <p>
+                    Reducing dining expenses could increase
+                    your monthly savings.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

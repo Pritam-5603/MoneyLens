@@ -5,6 +5,80 @@
 // ============================================
 
 // ============================================
+// MONEYLENS DASHBOARD
+// SEARCH + TRANSACTIONS
+// ============================================
+
+function searchDashboardTransactions() {
+
+    const searchInput = document.getElementById('dashboardSearchInput');
+    const transactionList = document.getElementById('dashboardTransactionList');
+
+    if (!searchInput || !transactionList) {
+        return;
+    }
+
+    const search = searchInput.value.toLowerCase().trim();
+
+    const transactions = transactionList.querySelectorAll('.recent-transaction');
+
+    transactions.forEach(transaction => {
+
+        const nameElement = transaction.querySelector('.recent-details strong');
+        const dateElement = transaction.querySelector('.recent-details span');
+
+        const name = nameElement
+            ? nameElement.textContent.toLowerCase()
+            : '';
+
+        const date = dateElement
+            ? dateElement.textContent.toLowerCase()
+            : '';
+
+        const category = transaction.dataset.category
+            ? transaction.dataset.category.toLowerCase()
+            : '';
+
+        /*
+         * Search through:
+         * - Transaction name
+         * - Date
+         * - Category
+         */
+
+        const matches =
+            name.includes(search) ||
+            date.includes(search) ||
+            category.includes(search);
+
+        if (matches) {
+            transaction.style.display = 'flex';
+        } else {
+            transaction.style.display = 'none';
+        }
+
+    });
+}
+
+
+// ============================================
+// SEARCH BAR EVENT
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const searchInput = document.getElementById('dashboardSearchInput');
+
+    if (searchInput) {
+
+        searchInput.addEventListener('input', function () {
+            searchDashboardTransactions();
+        });
+
+    }
+
+});
+// ============================================
 // 1. TRANSACTIONS PAGE FUNCTIONS
 // ============================================
 

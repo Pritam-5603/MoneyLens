@@ -3412,3 +3412,741 @@ select.form-control {
         font-size: 13px;
     }
 }
+
+/* ============================================
+   ANALYTICS PAGE
+   Premium Fintech Analytics
+============================================ */
+
+
+/* ============================================
+   1. HEADER
+============================================ */
+
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 28px;
+
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.analytics-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.analytics-title {
+    margin: 0;
+
+    font-size: 26px;
+    font-weight: 700;
+
+    color: #2d3748;
+
+    letter-spacing: -0.5px;
+}
+
+.analytics-subtitle {
+    margin: 0;
+
+    font-size: 14px;
+    font-weight: 400;
+
+    color: #a0aec0;
+}
+
+.analytics-period {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 16px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 50px;
+
+    color: #718096;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.analytics-period i {
+    color: #667eea;
+    font-size: 13px;
+}
+
+.analytics-period select {
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #4a5568;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+/* ============================================
+   2. OVERVIEW CARDS
+============================================ */
+
+.analytics-overview {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 22px;
+}
+
+.analytics-stat-card {
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    padding: 20px 22px;
+
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+    transition: all 0.3s ease;
+}
+
+.analytics-stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.09);
+}
+
+.analytics-stat-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+.analytics-stat-label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    color: #a0aec0;
+}
+
+.analytics-stat-value {
+    display: block;
+
+    font-size: 25px;
+    font-weight: 700;
+
+    color: #2d3748;
+
+    letter-spacing: -0.5px;
+}
+
+.analytics-stat-icon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    font-size: 15px;
+}
+
+.analytics-stat-icon.income {
+    background: #e6f8f3;
+    color: #00b894;
+}
+
+.analytics-stat-icon.expense {
+    background: #fff0f0;
+    color: #fc8181;
+}
+
+.analytics-stat-icon.savings {
+    background: #f0edff;
+    color: #667eea;
+}
+
+.analytics-stat-icon.rate {
+    background: #fff7e8;
+    color: #f39c12;
+}
+
+.analytics-stat-footer {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 10px;
+
+    font-size: 11px;
+}
+
+.analytics-stat-footer span {
+    font-weight: 700;
+}
+
+.analytics-stat-footer small {
+    color: #a0aec0;
+    font-size: 11px;
+}
+
+.analytics-stat-footer.positive {
+    color: #00b894;
+}
+
+.analytics-stat-footer.negative {
+    color: #fc8181;
+}
+
+
+/* ============================================
+   3. CHART GRID
+============================================ */
+
+.analytics-chart-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(320px, 0.85fr);
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+.analytics-chart-card {
+    min-width: 0;
+
+    overflow: hidden;
+}
+
+.analytics-large-chart {
+    min-height: 370px;
+}
+
+.analytics-chart-badge {
+    padding: 6px 12px;
+
+    border-radius: 50px;
+
+    background: #f0edff;
+
+    color: #667eea;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.analytics-chart-container {
+    width: 100%;
+
+    height: 290px;
+
+    padding: 15px 20px 20px;
+
+    box-sizing: border-box;
+}
+
+.analytics-chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.analytics-small-chart {
+    height: 270px;
+}
+
+
+/* ============================================
+   4. DONUT CHART
+============================================ */
+
+.analytics-donut-container {
+    height: 300px;
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px 30px;
+}
+
+.analytics-donut-container canvas {
+    width: 210px !important;
+    height: 210px !important;
+}
+
+.analytics-donut-center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    pointer-events: none;
+}
+
+.analytics-donut-center strong {
+    color: #2d3748;
+
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.analytics-donut-center span {
+    margin-top: 3px;
+
+    color: #a0aec0;
+
+    font-size: 10px;
+}
+
+
+/* ============================================
+   5. CATEGORY BREAKDOWN
+============================================ */
+
+.analytics-categories-card {
+    margin-bottom: 22px;
+
+    padding-bottom: 10px;
+}
+
+.analytics-category-list {
+    padding: 8px 22px 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+.analytics-category {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #f7fafc;
+}
+
+.analytics-category:last-child {
+    border-bottom: none;
+}
+
+.analytics-category-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 180px;
+}
+
+.analytics-category-icon {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+}
+
+.analytics-category-icon.housing {
+    background: #e8f3dc;
+    color: #65a62a;
+}
+
+.analytics-category-icon.food {
+    background: #fff0f0;
+    color: #fc8181;
+}
+
+.analytics-category-icon.transport {
+    background: #e8f4fb;
+    color: #4299e1;
+}
+
+.analytics-category-icon.shopping {
+    background: #f2edff;
+    color: #805ad5;
+}
+
+.analytics-category-icon.entertainment {
+    background: #fff6e5;
+    color: #ed8936;
+}
+
+.analytics-category-info strong {
+    display: block;
+
+    color: #2d3748;
+
+    font-size: 13px;
+
+    margin-bottom: 3px;
+}
+
+.analytics-category-info span {
+    display: block;
+
+    color: #a0aec0;
+
+    font-size: 10px;
+}
+
+.analytics-category-progress {
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    max-width: 550px;
+}
+
+.analytics-progress-bar {
+    flex: 1;
+
+    height: 7px;
+
+    background: #edf2f7;
+
+    border-radius: 50px;
+
+    overflow: hidden;
+}
+
+.analytics-progress-bar span {
+    display: block;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background: linear-gradient(
+        90deg,
+        #667eea,
+        #764ba2
+    );
+}
+
+.analytics-category-progress strong {
+    min-width: 75px;
+
+    text-align: right;
+
+    color: #4a5568;
+
+    font-size: 12px;
+}
+
+
+/* ============================================
+   6. INSIGHTS
+============================================ */
+
+.analytics-insights {
+    margin-bottom: 25px;
+}
+
+.analytics-section-title {
+    margin-bottom: 14px;
+}
+
+.analytics-section-title h2 {
+    margin: 0;
+
+    color: #2d3748;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.analytics-section-title p {
+    margin: 4px 0 0;
+
+    color: #a0aec0;
+
+    font-size: 11px;
+}
+
+.analytics-insight-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+.analytics-insight-card {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    padding: 19px;
+
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+
+    transition: all 0.3s ease;
+}
+
+.analytics-insight-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.analytics-insight-icon {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 11px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+.analytics-insight-icon.green {
+    background: #e6f8f3;
+    color: #00b894;
+}
+
+.analytics-insight-icon.purple {
+    background: #f0edff;
+    color: #667eea;
+}
+
+.analytics-insight-icon.orange {
+    background: #fff4e5;
+    color: #ed8936;
+}
+
+.analytics-insight-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #a0aec0;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+.analytics-insight-card h3 {
+    margin: 0 0 5px;
+
+    color: #2d3748;
+
+    font-size: 14px;
+}
+
+.analytics-insight-card p {
+    margin: 0;
+
+    color: #718096;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+/* ============================================
+   7. RESPONSIVE
+============================================ */
+
+@media (max-width: 1100px) {
+
+    .analytics-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .analytics-chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-large-chart {
+        min-height: auto;
+    }
+
+    .analytics-category-progress {
+        max-width: 450px;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .analytics-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .analytics-period {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        justify-content: center;
+    }
+
+    .analytics-overview {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+    .analytics-stat-value {
+        font-size: 23px;
+    }
+
+    .analytics-chart-container {
+        height: 250px;
+
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .analytics-donut-container {
+        height: 270px;
+    }
+
+    .analytics-category {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .analytics-category-info {
+        width: 100%;
+    }
+
+    .analytics-category-progress {
+        width: 100%;
+
+        max-width: none;
+    }
+
+    .analytics-insight-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .analytics-title {
+        font-size: 22px;
+    }
+
+    .analytics-subtitle {
+        font-size: 13px;
+    }
+
+    .analytics-stat-card {
+        padding: 18px;
+    }
+
+    .analytics-stat-value {
+        font-size: 22px;
+    }
+
+    .analytics-chart-card {
+        border-radius: 14px;
+    }
+
+    .dashboard-card-header {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .analytics-category-list {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .analytics-category-progress strong {
+        min-width: 65px;
+        font-size: 11px;
+    }
+
+    .analytics-insight-card {
+        padding: 16px;
+    }
+}
