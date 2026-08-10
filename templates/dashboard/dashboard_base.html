@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | MoneyLens
+{% endblock %}
+
+{% block content %}
+
+<!-- ============================================
+     DASHBOARD LAYOUT
+     Purpose: Main container for sidebar + content
+     Design: Flex layout with fixed sidebar
+============================================ -->
+<div class="dashboard-layout">
+
+    <!-- ==========================================
+         SIDEBAR
+         Design: Fixed width, dark gradient background
+         Purpose: Primary navigation
+    ========================================== -->
+    <aside class="dashboard-sidebar">
+
+        <!-- Logo Section -->
+        <div class="sidebar-logo">
+            <a href="{{ url_for('dashboard') }}" class="logo-link">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">MoneyLens</span>
+            </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <a href="{{ url_for('dashboard') }}" class="nav-link">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-label">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('transactions') }}" class="nav-link">
+                        <span class="nav-icon">💳</span>
+                        <span class="nav-label">Transactions</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('analytics') }}" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-label">Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('budgets') }}" class="nav-link">
+                        <span class="nav-icon">🎯</span>
+                        <span class="nav-label">Budgets</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('profile') }}" class="nav-link">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-label">Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Footer Links (Settings + Logout) -->
+        <div class="sidebar-footer">
+            <a href="{{ url_for('settings') }}" class="footer-link">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </a>
+            <a href="{{ url_for('logout') }}" class="footer-link logout-link">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-label">Logout</span>
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- ==========================================
+         MAIN CONTENT AREA
+         Purpose: Contains topbar + page content
+    ========================================== -->
+    <main class="dashboard-main">
+
+        <!-- ==========================================
+             TOPBAR
+             Design: White, with search + profile
+             Purpose: Global header for dashboard
+        ========================================== -->
+        <header class="dashboard-topbar">
+
+            <div class="topbar-left">
+                <!-- Mobile Menu Toggle (for responsive) -->
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h2 class="page-title">Dashboard</h2>
+            </div>
+
+            <div class="topbar-right">
+                <!-- Search Box -->
+                <div class="search-wrapper">
+                    <input
+                        type="text"
+                        class="search-box"
+                        id="dashboardSearch"
+                        placeholder="Search transactions..."
+                        aria-label="Search">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+
+                <!-- Notification Bell -->
+                <button class="notification-btn" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+
+                <!-- User Profile Avatar -->
+                <div class="profile-avatar" title="Your Profile">
+                    <span class="avatar-initials">P</span>
+                </div>
+            </div>
+
+        </header>
+
+        <!-- ==========================================
+             PAGE CONTENT
+             Purpose: Child templates will render here
+        ========================================== -->
+        <section class="dashboard-content">
+
+            {% block dashboard_content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+{% endblock %}
