@@ -1,0 +1,136 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<!-- ============================================
+     PROFILE HEADER
+============================================ -->
+<div class="profile-header">
+    <div>
+        <h1 class="profile-title">Profile</h1>
+        <p class="profile-subtitle">Manage your personal information and account settings</p>
+    </div>
+</div>
+
+<!-- ============================================
+     PROFILE CONTENT
+============================================ -->
+<div class="profile-content">
+
+    <!-- ========================================
+         LEFT COLUMN: PROFILE PICTURE
+    ========================================= -->
+    <div class="profile-left">
+        <div class="profile-card">
+            <div class="profile-avatar-section">
+                <div class="profile-avatar-large" id="profileAvatar">
+                    <span class="profile-avatar-text">P</span>
+                </div>
+                <button class="profile-avatar-upload" onclick="document.getElementById('profilePicInput').click()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="profilePicInput" accept="image/*" style="display:none;" onchange="previewProfilePicture(this)">
+            </div>
+            <h3 class="profile-name">Pritam Kumar</h3>
+            <p class="profile-email">pritam@example.com</p>
+            <div class="profile-badge">Premium Member</div>
+
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <span class="profile-stat-value">12</span>
+                    <span class="profile-stat-label">Transactions</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-value">3</span>
+                    <span class="profile-stat-label">Budgets</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="profile-stat-value">6</span>
+                    <span class="profile-stat-label">Months</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         RIGHT COLUMN: PROFILE FORM
+    ========================================= -->
+    <div class="profile-right">
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h3>Edit Profile</h3>
+                <p>Update your personal information</p>
+            </div>
+
+            <form id="profileForm" class="profile-form">
+                <div class="profile-form-row">
+                    <div class="form-group">
+                        <label for="profileFullName">Full Name</label>
+                        <input type="text" id="profileFullName" class="form-control" value="Pritam Kumar">
+                    </div>
+                    <div class="form-group">
+                        <label for="profileUsername">Username</label>
+                        <input type="text" id="profileUsername" class="form-control" value="pritamk">
+                    </div>
+                </div>
+
+                <div class="profile-form-row">
+                    <div class="form-group">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" class="form-control" value="pritam@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePhone">Phone Number</label>
+                        <input type="tel" id="profilePhone" class="form-control" placeholder="Enter phone number">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profileBio">Bio</label>
+                    <textarea id="profileBio" class="form-control" rows="3" placeholder="Tell us a little about yourself...">Passionate about personal finance and helping others achieve financial freedom.</textarea>
+                </div>
+
+                <div class="profile-form-actions">
+                    <button type="submit" class="profile-save-btn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="profile-cancel-btn" onclick="resetProfileForm()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ========================================
+             ACCOUNT INFO CARD
+        ========================================= -->
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h3>Account Information</h3>
+                <p>Your account details</p>
+            </div>
+
+            <div class="profile-info-grid">
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Account Type</span>
+                    <span class="profile-info-value">Premium</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Member Since</span>
+                    <span class="profile-info-value">January 2026</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Account Status</span>
+                    <span class="profile-info-value status-active">Active</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Last Login</span>
+                    <span class="profile-info-value">Today, 10:30 AM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

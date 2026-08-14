@@ -8,6 +8,78 @@
 // MONEYLENS DASHBOARD
 // SEARCH + TRANSACTIONS
 // ============================================
+// ============================================
+// DASHBOARD PAGE FUNCTIONS (Update Existing)
+// ============================================
+
+// 1. Update Dashboard Stats
+function updateDashboardStats() {
+    const stats = {
+        income: 65000,
+        expenses: 16000,
+        savings: 48000
+    };
+    
+    // Update finance values
+    const financeValues = document.querySelectorAll('.finance-value');
+    if (financeValues.length >= 3) {
+        if (financeValues[0]) financeValues[0].textContent = '₹' + stats.income.toLocaleString('en-IN');
+        if (financeValues[1]) financeValues[1].textContent = '₹' + stats.expenses.toLocaleString('en-IN');
+        if (financeValues[2]) financeValues[2].textContent = '₹' + stats.savings.toLocaleString('en-IN');
+    }
+}
+
+// 2. Setup AI Insight Button
+function setupAIInsight() {
+    const aiButton = document.querySelector('.ai-action-btn');
+    if (aiButton) {
+        aiButton.addEventListener('click', function() {
+            alert('🤖 AI Insights\n\nThis will open detailed AI-powered financial insights.');
+            // In real implementation: window.location.href = '/analytics';
+        });
+    }
+}
+
+// 3. Setup Recent Transactions (for dashboard only)
+function setupDashboardTransactions() {
+    const transactions = document.querySelectorAll('.recent-transaction');
+    transactions.forEach(transaction => {
+        transaction.addEventListener('click', function() {
+            const name = this.querySelector('.recent-details strong').textContent;
+            alert(`📊 View transaction: ${name}\n\nThis will open the transaction details.`);
+        });
+    });
+}
+
+// 4. Initialize Dashboard (Update existing)
+function initDashboard() {
+    console.log('📊 Initializing dashboard...');
+    
+    // Update stats
+    updateDashboardStats();
+    
+    // Setup quick actions
+    setupQuickActions();
+    
+    // Setup AI insight
+    setupAIInsight();
+    
+    // Setup recent transactions
+    setupDashboardTransactions();
+    
+    // Setup mobile sidebar
+    const mobileToggle = document.getElementById('mobileToggle');
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', toggleSidebar);
+    }
+    
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+    }
+    
+    console.log('✅ Dashboard initialized successfully!');
+}
 
 function searchDashboardTransactions() {
 
@@ -206,19 +278,43 @@ function closeModal() {
 
 // Update categories based on transaction type
 function updateCategories() {
-    const type = document.getElementById('transactionType').value;
-    const incomeGroup = document.getElementById('incomeCategories');
-    const expenseGroup = document.getElementById('expenseCategories');
-    
-    if (type === 'income') {
-        if (incomeGroup) incomeGroup.style.display = '';
-        if (expenseGroup) expenseGroup.style.display = 'none';
+
+    const typeSelect =
+        document.getElementById("transactionType");
+
+    if (!typeSelect) {
+        return;
+    }
+
+    const type = typeSelect.value;
+
+    const incomeGroup =
+        document.getElementById("incomeCategories");
+
+    const expenseGroup =
+        document.getElementById("expenseCategories");
+
+    if (type === "income") {
+
+        if (incomeGroup) {
+            incomeGroup.style.display = "";
+        }
+
+        if (expenseGroup) {
+            expenseGroup.style.display = "none";
+        }
+
     } else {
-        if (incomeGroup) incomeGroup.style.display = 'none';
-        if (expenseGroup) expenseGroup.style.display = '';
+
+        if (incomeGroup) {
+            incomeGroup.style.display = "none";
+        }
+
+        if (expenseGroup) {
+            expenseGroup.style.display = "";
+        }
     }
 }
-
 // ============================================
 // 3. TRANSACTION ACTIONS
 // ============================================
@@ -805,5 +901,524 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ Password match checker initialized!');
     } else {
         console.log('❌ Confirm password input NOT found!');
+    }
+});
+
+// ============================================
+// ANALYTICS PAGE FUNCTIONS
+// ============================================
+
+// 1. Handle Analytics Period Change
+function setupAnalyticsPeriod() {
+    const periodSelect = document.getElementById('analyticsPeriod');
+    if (periodSelect) {
+        periodSelect.addEventListener('change', function() {
+            const period = this.value;
+            console.log(`📊 Period changed to: ${period}`);
+            
+            // Show loading state on charts
+            showChartsLoading(true);
+            
+            // Simulate data fetch (replace with actual API call)
+            setTimeout(() => {
+                // Update charts with new data based on period
+                updateChartsForPeriod(period);
+                showChartsLoading(false);
+            }, 800);
+        });
+    }
+}
+
+// 2. Show/Hide Charts Loading State
+function showChartsLoading(show) {
+    const containers = document.querySelectorAll('.analytics-chart-container, .analytics-donut-container');
+    containers.forEach(container => {
+        if (show) {
+            container.style.opacity = '0.5';
+            container.style.pointerEvents = 'none';
+        } else {
+            container.style.opacity = '1';
+            container.style.pointerEvents = 'auto';
+        }
+    });
+}
+
+// 3. Update Charts for Different Periods (Demo)
+function updateChartsForPeriod(period) {
+    // This will be handled by chart.js
+    // We'll dispatch a custom event that chart.js can listen to
+    const event = new CustomEvent('periodChange', { 
+        detail: { period: period } 
+    });
+    document.dispatchEvent(event);
+}
+
+// 4. Animate Analytics Stats on Scroll
+function animateStats() {
+    const statValues = document.querySelectorAll('.analytics-stat-value');
+    statValues.forEach(stat => {
+        const text = stat.textContent;
+        // Only animate if it's a number
+        const number = parseFloat(text.replace(/[₹,]/g, ''));
+        if (!isNaN(number)) {
+            animateNumber(stat, number);
+        }
+    });
+}
+
+// 5. Animate Number Counter
+function animateNumber(element, target) {
+    let current = 0;
+    const increment = target / 60;
+    const duration = 1000;
+    const stepTime = duration / 60;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        // Format with currency symbol
+        element.textContent = '₹' + Math.round(current).toLocaleString('en-IN');
+    }, stepTime);
+}
+
+// 6. Analytics Page Initialization
+function initAnalytics() {
+    console.log('📊 Initializing Analytics page...');
+    
+    // Setup period selector
+    setupAnalyticsPeriod();
+    
+    // Animate stats after a short delay
+    setTimeout(() => {
+        animateStats();
+    }, 500);
+    
+    // Add hover effect to insight cards
+    document.querySelectorAll('.analytics-insight-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add hover effect to category items
+    document.querySelectorAll('.analytics-category').forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.background = '#f7fafc';
+            this.style.borderRadius = '12px';
+            this.style.transition = 'background 0.3s ease';
+            this.style.padding = '12px 16px';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.background = 'transparent';
+            this.style.padding = '0';
+        });
+    });
+    
+    console.log('✅ Analytics page initialized successfully!');
+}
+// ============================================
+// BUDGETS PAGE FUNCTIONS
+// ============================================
+
+// Open Create Budget Modal
+function openBudgetModal() {
+    const modal = document.getElementById('createBudgetModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        // Set default month to current
+        const monthInput = document.getElementById('budgetMonth');
+        if (monthInput) {
+            const today = new Date();
+            monthInput.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+        }
+    }
+}
+
+// Close Create Budget Modal
+function closeBudgetModal() {
+    const modal = document.getElementById('createBudgetModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Edit Budget
+function editBudget(id) {
+    alert(`✏️ Edit Budget ${id}\n\nThis will open the edit modal with budget data pre-filled.`);
+    // TODO: In real implementation, fetch budget data and populate modal
+}
+
+// Delete Budget
+function deleteBudget(id) {
+    if (confirm('⚠️ Are you sure you want to delete this budget?\n\nThis action cannot be undone.')) {
+        alert(`🗑️ Budget ${id} deleted!\n\n(This is a demo. Real implementation will remove it from database.)`);
+        // TODO: In real implementation, send delete request to server
+    }
+}
+
+// Handle Create Budget Form Submission
+function handleCreateBudget(event) {
+    event.preventDefault();
+    
+    const category = document.getElementById('budgetCategory').value;
+    const amount = document.getElementById('budgetAmount').value;
+    const month = document.getElementById('budgetMonth').value;
+    const note = document.getElementById('budgetNote').value;
+    
+    if (!category) {
+        alert('Please select a category');
+        return;
+    }
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid budget amount');
+        return;
+    }
+    if (!month) {
+        alert('Please select a month');
+        return;
+    }
+    
+    alert(`✅ Budget created successfully!\n\nCategory: ${category}\nAmount: ₹${amount}\nMonth: ${month}\nNote: ${note || 'None'}`);
+    closeBudgetModal();
+    // TODO: In real implementation, send data to server via AJAX
+}
+
+// Initialize Budgets Page
+function initBudgets() {
+    console.log('📊 Budgets page initialized!');
+    
+    // Open modal button
+    const openBtn = document.getElementById('openBudgetModal');
+    if (openBtn) {
+        openBtn.addEventListener('click', openBudgetModal);
+    }
+    
+    // Empty state button
+    const emptyBtn = document.getElementById('emptyBudgetBtn');
+    if (emptyBtn) {
+        emptyBtn.addEventListener('click', openBudgetModal);
+    }
+    
+    // Close modal buttons
+    const closeBtn = document.getElementById('closeBudgetModal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeBudgetModal);
+    }
+    
+    const cancelBtn = document.getElementById('cancelBudgetBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeBudgetModal);
+    }
+    
+    // Close on outside click
+    const modal = document.getElementById('createBudgetModal');
+    if (modal) {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeBudgetModal();
+            }
+        });
+    }
+    
+    // Close on ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeBudgetModal();
+        }
+    });
+    
+    // Form submission
+    const form = document.getElementById('createBudgetForm');
+    if (form) {
+        form.addEventListener('submit', handleCreateBudget);
+    }
+}
+
+// Auto-init when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.budgets-header')) {
+        initBudgets();
+    }
+});
+// ============================================
+// SETTINGS PAGE FUNCTIONS
+// ============================================
+
+// 1. Toggle Password Visibility
+function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const toggleBtn = input?.parentElement?.querySelector('.settings-password-toggle');
+    
+    if (!input || !toggleBtn) return;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    } else {
+        input.type = 'password';
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+    }
+}
+
+// 2. Set Theme
+function setTheme(theme) {
+    // Remove active class from all theme buttons
+    document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to selected theme
+    const selectedBtn = document.querySelector(`.settings-option[data-theme="${theme}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+    
+    // Apply theme (Demo)
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    
+    console.log(`🌓 Theme changed to: ${theme}`);
+    
+    // Save preference (Demo)
+    localStorage.setItem('theme', theme);
+}
+
+// 3. Handle Profile Settings Form
+function handleProfileSettings(event) {
+    event.preventDefault();
+    
+    const fullName = document.getElementById('settingsFullName').value;
+    const email = document.getElementById('settingsEmail').value;
+    const username = document.getElementById('settingsUsername').value;
+    
+    if (!fullName || fullName.trim() === '') {
+        alert('Please enter your full name');
+        return;
+    }
+    
+    if (!email || email.trim() === '') {
+        alert('Please enter your email address');
+        return;
+    }
+    
+    if (!username || username.trim() === '') {
+        alert('Please enter your username');
+        return;
+    }
+    
+    // Show loading state
+    const btn = document.querySelector('#profileSettingsForm .settings-save-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        alert('✅ Profile updated successfully!');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1500);
+}
+
+// 4. Handle Preferences Form
+function handlePreferences(event) {
+    event.preventDefault();
+    
+    const currency = document.getElementById('settingsCurrency').value;
+    const dateFormat = document.getElementById('settingsDateFormat').value;
+    const language = document.getElementById('settingsLanguage').value;
+    
+    const btn = document.querySelector('#preferencesForm .settings-save-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        alert(`✅ Preferences saved!\n\nCurrency: ${currency}\nDate Format: ${dateFormat}\nLanguage: ${language}`);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1500);
+}
+
+// 5. Handle Notifications Form
+function handleNotifications(event) {
+    event.preventDefault();
+    
+    const btn = document.querySelector('#notificationsForm .settings-save-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        alert('✅ Notification settings saved successfully!');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1500);
+}
+
+// 6. Confirm Delete Account
+function confirmDeleteAccount() {
+    if (confirm('⚠️ Are you sure you want to delete your account?\n\nThis action is PERMANENT and cannot be undone. All your data will be lost.')) {
+        if (confirm('⚠️ FINAL WARNING: Are you absolutely sure? This will delete everything.')) {
+            const btn = document.querySelector('.settings-danger-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('🗑️ Account deleted successfully.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                // Redirect to homepage
+                window.location.href = '/';
+            }, 2000);
+        }
+    }
+}
+
+// 7. Initialize Settings Page
+function initSettings() {
+    console.log('⚙️ Settings page initialized!');
+    
+    // --- Profile Settings ---
+    const profileForm = document.getElementById('profileSettingsForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileSettings);
+    }
+    
+    // --- Preferences Form ---
+    const preferencesForm = document.getElementById('preferencesForm');
+    if (preferencesForm) {
+        preferencesForm.addEventListener('submit', handlePreferences);
+    }
+    
+    // --- Notifications Form ---
+    const notificationsForm = document.getElementById('notificationsForm');
+    if (notificationsForm) {
+        notificationsForm.addEventListener('submit', handleNotifications);
+    }
+    
+    // --- Load saved theme ---
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    }
+}
+
+// ============================================
+// AUTO-INITIALIZE
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.settings-header')) {
+        initSettings();
+    }
+});
+// ============================================
+// PROFILE PAGE FUNCTIONS
+// ============================================
+
+// 1. Preview Profile Picture
+function previewProfilePicture(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const avatar = document.querySelector('.profile-avatar-large');
+            if (avatar) {
+                avatar.style.backgroundImage = `url(${e.target.result})`;
+                avatar.style.backgroundSize = 'cover';
+                avatar.style.backgroundPosition = 'center';
+                avatar.textContent = '';
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// 2. Handle Profile Form Submission
+function handleProfileUpdate(event) {
+    event.preventDefault();
+    
+    const fullName = document.getElementById('profileFullName').value;
+    const username = document.getElementById('profileUsername').value;
+    const email = document.getElementById('profileEmail').value;
+    const phone = document.getElementById('profilePhone').value;
+    const bio = document.getElementById('profileBio').value;
+    
+    // Validate
+    if (!fullName || fullName.trim() === '') {
+        alert('Please enter your full name');
+        return;
+    }
+    
+    if (!email || email.trim() === '') {
+        alert('Please enter your email address');
+        return;
+    }
+    
+    // Show loading state
+    const btn = document.querySelector('.profile-save-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        alert('✅ Profile updated successfully!');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        
+        // Update name and email in avatar section
+        document.querySelector('.profile-name').textContent = fullName;
+        document.querySelector('.profile-email').textContent = email;
+        
+        // Update avatar initial
+        const avatarText = document.querySelector('.profile-avatar-text');
+        if (avatarText) {
+            avatarText.textContent = fullName.charAt(0).toUpperCase();
+        }
+    }, 1500);
+}
+
+// 3. Reset Profile Form
+function resetProfileForm() {
+    if (confirm('Discard your changes?')) {
+        document.getElementById('profileFullName').value = 'Pritam Kumar';
+        document.getElementById('profileUsername').value = 'pritamk';
+        document.getElementById('profileEmail').value = 'pritam@example.com';
+        document.getElementById('profilePhone').value = '';
+        document.getElementById('profileBio').value = 'Passionate about personal finance and helping others achieve financial freedom.';
+    }
+}
+
+// 4. Initialize Profile Page
+function initProfile() {
+    console.log('👤 Profile page initialized!');
+    
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', handleProfileUpdate);
+    }
+}
+
+// ============================================
+// AUTO-INITIALIZE
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.profile-header')) {
+        initProfile();
     }
 });

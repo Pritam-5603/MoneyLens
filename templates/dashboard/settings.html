@@ -1,0 +1,217 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block dashboard_content %}
+
+<!-- ============================================
+     SETTINGS HEADER
+============================================ -->
+<div class="settings-header">
+    <div>
+        <h1 class="settings-title">Settings</h1>
+        <p class="settings-subtitle">Manage your account preferences and app settings</p>
+    </div>
+</div>
+
+<!-- ============================================
+     SETTINGS GRID - 2 COLUMNS
+============================================ -->
+<div class="settings-grid">
+
+    <!-- ========================================
+         CARD 1: PROFILE
+    ========================================= -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div class="settings-card-icon profile">
+                <i class="fas fa-user"></i>
+            </div>
+            <div>
+                <h3>Profile Settings</h3>
+                <p>Update your personal information</p>
+            </div>
+        </div>
+
+        <form id="profileSettingsForm" class="settings-form">
+            <div class="form-group">
+                <label for="settingsFullName">Full Name</label>
+                <input type="text" id="settingsFullName" class="form-control" value="Pritam Kumar">
+            </div>
+            <div class="form-group">
+                <label for="settingsEmail">Email Address</label>
+                <input type="email" id="settingsEmail" class="form-control" value="pritam@example.com">
+            </div>
+            <div class="form-group">
+                <label for="settingsUsername">Username</label>
+                <input type="text" id="settingsUsername" class="form-control" value="pritamk">
+            </div>
+            <button type="submit" class="settings-save-btn">
+                <i class="fas fa-save"></i> Update Profile
+            </button>
+        </form>
+    </div>
+
+    <!-- ========================================
+         CARD 2: PREFERENCES
+    ========================================= -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div class="settings-card-icon preferences">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+            <div>
+                <h3>Preferences</h3>
+                <p>Customize your app experience</p>
+            </div>
+        </div>
+
+        <form id="preferencesForm" class="settings-form">
+            <div class="settings-toggle-group">
+                <label>Theme</label>
+                <div class="settings-options">
+                    <button type="button" class="settings-option active" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i> Light
+                    </button>
+                    <button type="button" class="settings-option" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i> Dark
+                    </button>
+                    <button type="button" class="settings-option" onclick="setTheme('system')">
+                        <i class="fas fa-desktop"></i> System
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="settingsCurrency">Currency</label>
+                <select id="settingsCurrency" class="form-control">
+                    <option value="INR" selected>₹ Indian Rupee (INR)</option>
+                    <option value="USD">$ US Dollar (USD)</option>
+                    <option value="EUR">€ Euro (EUR)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="settingsDateFormat">Date Format</label>
+                <select id="settingsDateFormat" class="form-control">
+                    <option value="DD/MM/YYYY" selected>DD/MM/YYYY</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="settingsLanguage">Language</label>
+                <select id="settingsLanguage" class="form-control">
+                    <option value="en" selected>English</option>
+                    <option value="hi">Hindi</option>
+                </select>
+            </div>
+
+            <button type="submit" class="settings-save-btn">
+                <i class="fas fa-save"></i> Save Preferences
+            </button>
+        </form>
+    </div>
+
+    <!-- ========================================
+         CARD 3: NOTIFICATIONS
+    ========================================= -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div class="settings-card-icon notifications">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div>
+                <h3>Notifications</h3>
+                <p>Manage your notification preferences</p>
+            </div>
+        </div>
+
+        <form id="notificationsForm" class="settings-form">
+            <div class="settings-toggle-item">
+                <div>
+                    <strong>Email Notifications</strong>
+                    <span>Receive updates via email</span>
+                </div>
+                <label class="settings-switch">
+                    <input type="checkbox" checked>
+                    <span class="settings-slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-toggle-item">
+                <div>
+                    <strong>Budget Alerts</strong>
+                    <span>Get notified when approaching budget limits</span>
+                </div>
+                <label class="settings-switch">
+                    <input type="checkbox" checked>
+                    <span class="settings-slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-toggle-item">
+                <div>
+                    <strong>Weekly Reports</strong>
+                    <span>Receive weekly financial summary</span>
+                </div>
+                <label class="settings-switch">
+                    <input type="checkbox">
+                    <span class="settings-slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-toggle-item">
+                <div>
+                    <strong>AI Insights</strong>
+                    <span>Get AI-powered financial insights</span>
+                </div>
+                <label class="settings-switch">
+                    <input type="checkbox" checked>
+                    <span class="settings-slider"></span>
+                </label>
+            </div>
+
+            <div class="settings-toggle-item">
+                <div>
+                    <strong>Marketing & Updates</strong>
+                    <span>News about new features and updates</span>
+                </div>
+                <label class="settings-switch">
+                    <input type="checkbox">
+                    <span class="settings-slider"></span>
+                </label>
+            </div>
+
+            <button type="submit" class="settings-save-btn">
+                <i class="fas fa-save"></i> Save Notification Settings
+            </button>
+        </form>
+    </div>
+
+    <!-- ========================================
+         CARD 4: DANGER ZONE (Full Width)
+    ========================================= -->
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div class="settings-card-icon security">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h3>Danger Zone</h3>
+                <p>Permanently delete your account and all data</p>
+            </div>
+        </div>
+
+        <div class="settings-danger-content">
+            <p class="settings-danger-text">
+                <i class="fas fa-exclamation-circle"></i>
+                Once you delete your account, there is no going back. This action is permanent.
+            </p>
+            <button class="settings-danger-btn" onclick="confirmDeleteAccount()">
+                <i class="fas fa-trash"></i> Delete Account
+            </button>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

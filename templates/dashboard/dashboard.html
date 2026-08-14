@@ -5,7 +5,6 @@
 <!-- ============================================
      DASHBOARD HEADER
 ============================================ -->
-
 <div class="finance-header">
     <div>
         <span class="finance-welcome">Welcome back 👋</span>
@@ -14,14 +13,12 @@
     </div>
 </div>
 
-
 <!-- ============================================
-     FINANCIAL OVERVIEW
+     FINANCIAL OVERVIEW CARDS
 ============================================ -->
-
 <div class="financial-overview">
 
-    <!-- Income -->
+    <!-- Income Card -->
     <div class="finance-card income-card">
         <div class="finance-card-top">
             <span>Total Income</span>
@@ -29,9 +26,7 @@
                 <i class="fas fa-arrow-up"></i>
             </div>
         </div>
-
         <div class="finance-value">₹65,000</div>
-
         <div class="finance-bottom">
             <span class="trend positive">
                 <i class="fas fa-arrow-up"></i> 8.2%
@@ -40,8 +35,7 @@
         </div>
     </div>
 
-
-    <!-- Expenses -->
+    <!-- Expenses Card -->
     <div class="finance-card expense-card">
         <div class="finance-card-top">
             <span>Total Expenses</span>
@@ -49,9 +43,7 @@
                 <i class="fas fa-arrow-down"></i>
             </div>
         </div>
-
         <div class="finance-value">₹16,000</div>
-
         <div class="finance-bottom">
             <span class="trend negative">
                 <i class="fas fa-arrow-down"></i> 3.4%
@@ -60,8 +52,7 @@
         </div>
     </div>
 
-
-    <!-- Savings -->
+    <!-- Savings Card -->
     <div class="finance-card savings-card">
         <div class="finance-card-top">
             <span>Total Savings</span>
@@ -69,9 +60,7 @@
                 <i class="fas fa-piggy-bank"></i>
             </div>
         </div>
-
         <div class="finance-value">₹48,000</div>
-
         <div class="finance-bottom">
             <span class="trend positive">
                 <i class="fas fa-arrow-up"></i> 14.1%
@@ -82,43 +71,28 @@
 
 </div>
 
-
-
-
-
 <!-- ============================================
-     ANALYTICS SECTION
+     ANALYTICS GRID
 ============================================ -->
-
 <div class="analytics-grid">
 
-    <!-- ========================================
-         CASH FLOW
-    ========================================= -->
-
+    <!-- Cash Flow -->
     <div class="dashboard-card cash-flow-dashboard">
-
         <div class="dashboard-card-header">
-
             <div>
                 <h3>Cash Flow</h3>
                 <p>Income vs expenses over time</p>
             </div>
-
             <select class="chart-period">
                 <option>6M</option>
                 <option>3M</option>
                 <option>1M</option>
                 <option>1Y</option>
             </select>
-
         </div>
 
-
         <!-- Cash Flow Summary -->
-
         <div class="cash-summary">
-
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle income-dot"></i>
@@ -126,7 +100,6 @@
                 </span>
                 <strong>₹49,829</strong>
             </div>
-
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle expense-dot"></i>
@@ -134,7 +107,6 @@
                 </span>
                 <strong>₹36,868</strong>
             </div>
-
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle net-dot"></i>
@@ -142,282 +114,194 @@
                 </span>
                 <strong class="net-positive">₹12,961</strong>
             </div>
-
         </div>
 
-
-        <!-- Actual Chart -->
-
+        <!-- Cash Flow Chart -->
         <div class="cash-chart-container">
             <canvas id="cashFlowChart"></canvas>
         </div>
-
     </div>
 
-
-    <!-- ========================================
-         SPENDING
-    ========================================= -->
-
+    <!-- Spending -->
     <div class="dashboard-card spending-dashboard">
-
         <div class="dashboard-card-header">
-
             <div>
                 <h3>Spending</h3>
                 <p>By category this month</p>
             </div>
-
         </div>
 
-
-        <!-- Donut Chart -->
-
+        <!-- Spending Chart -->
         <div class="spending-chart-container">
             <canvas id="spendingChart"></canvas>
-
             <div class="spending-total">
                 <strong>₹4.7k</strong>
                 <span>Total spent</span>
             </div>
         </div>
 
-
         <!-- Spending Categories -->
-
         <div class="spending-categories">
-
             <div class="spending-category">
                 <span>
                     <i class="fas fa-circle category-housing"></i>
                     Housing
                 </span>
-
                 <strong>₹2,100</strong>
             </div>
-
             <div class="spending-category">
                 <span>
                     <i class="fas fa-circle category-food"></i>
                     Food & Dining
                 </span>
-
                 <strong>₹940</strong>
             </div>
-
             <div class="spending-category">
                 <span>
                     <i class="fas fa-circle category-transport"></i>
                     Transport
                 </span>
-
                 <strong>₹520</strong>
             </div>
-
             <div class="spending-category">
                 <span>
                     <i class="fas fa-circle category-shopping"></i>
                     Shopping
                 </span>
-
                 <strong>₹680</strong>
             </div>
-
             <div class="spending-category">
                 <span>
                     <i class="fas fa-circle category-other"></i>
                     Other
                 </span>
-
                 <strong>₹410</strong>
             </div>
-
         </div>
-
     </div>
 
 </div>
 
-
 <!-- ============================================
-     BOTTOM SECTION
+     BOTTOM GRID
 ============================================ -->
-
 <div class="bottom-dashboard-grid">
 
-
-    <!-- ========================================
-         RECENT TRANSACTIONS
-    ========================================= -->
-
-    <div class="dashboard-card recent-dashboard" >
-
+    <!-- Recent Transactions -->
+    <div class="dashboard-card recent-dashboard">
         <div class="dashboard-card-header">
-
             <div>
                 <h3>Recent Transactions</h3>
                 <p>Your latest account activity</p>
             </div>
-
             <a href="{{ url_for('transactions') }}" class="dashboard-view-all">
                 View all
                 <i class="fas fa-arrow-right"></i>
             </a>
-
         </div>
-
 
         <div class="recent-transactions" id="dashboardTransactionList">
 
-            <!-- Transaction -->
-
+            <!-- Transaction 1 -->
             <div class="recent-transaction" data-category="shopping">
-
                 <div class="recent-icon expense">
                     <i class="fas fa-shopping-bag"></i>
                 </div>
-
                 <div class="recent-details">
                     <strong>Grocery Shopping</strong>
                     <span>Today, 2:30 PM</span>
                 </div>
-
-                <strong class="recent-amount negative">
-                    -₹450
-                </strong>
-
+                <strong class="recent-amount negative">-₹450</strong>
             </div>
 
-
-            <!-- Transaction -->
-
+            <!-- Transaction 2 -->
             <div class="recent-transaction" data-category="salary">
-
                 <div class="recent-icon income">
                     <i class="fas fa-wallet"></i>
                 </div>
-
                 <div class="recent-details">
                     <strong>Salary Credit</strong>
                     <span>Yesterday, 10:00 AM</span>
                 </div>
-
-                <strong class="recent-amount positive">
-                    +₹25,000
-                </strong>
-
+                <strong class="recent-amount positive">+₹25,000</strong>
             </div>
 
-
-            <!-- Transaction -->
-
+            <!-- Transaction 3 -->
             <div class="recent-transaction" data-category="food">
-
                 <div class="recent-icon expense">
                     <i class="fas fa-utensils"></i>
                 </div>
-
                 <div class="recent-details">
                     <strong>Dinner at Restaurant</strong>
                     <span>Aug 5, 8:00 PM</span>
                 </div>
-
-                <strong class="recent-amount negative">
-                    -₹1,200
-                </strong>
-
+                <strong class="recent-amount negative">-₹1,200</strong>
             </div>
 
-
-            <!-- Transaction -->
-
+            <!-- Transaction 4 -->
             <div class="recent-transaction" data-category="bills">
-
                 <div class="recent-icon expense">
                     <i class="fas fa-bolt"></i>
                 </div>
-
                 <div class="recent-details">
                     <strong>Electricity Bill</strong>
                     <span>Aug 3, 4:15 PM</span>
                 </div>
-
-                <strong class="recent-amount negative">
-                    -₹2,800
-                </strong>
-
+                <strong class="recent-amount negative">-₹2,800</strong>
             </div>
 
-
-            <!-- Transaction -->
-
+            <!-- Transaction 5 -->
             <div class="recent-transaction" data-category="income">
-
                 <div class="recent-icon income">
                     <i class="fas fa-hand-holding-usd"></i>
                 </div>
-
                 <div class="recent-details">
                     <strong>Freelance Payment</strong>
                     <span>Aug 1, 11:20 AM</span>
                 </div>
-
-                <strong class="recent-amount positive">
-                    +₹12,000
-                </strong>
-
+                <strong class="recent-amount positive">+₹12,000</strong>
             </div>
 
         </div>
-
     </div>
 
-
-    <!-- ========================================
-         AI INSIGHTS
-    ========================================= -->
-
+    <!-- AI Insights -->
     <div class="dashboard-card ai-dashboard">
-
         <div class="dashboard-card-header">
-
             <div>
                 <h3>AI Insights</h3>
                 <p>Personalized for your finances</p>
             </div>
-
             <div class="ai-small-icon">
                 <i class="fas fa-sparkles"></i>
             </div>
-
         </div>
 
-
         <div class="ai-insight-content">
-
             <div class="ai-main-icon">
                 <i class="fas fa-lightbulb"></i>
             </div>
-
             <h4>You're doing great!</h4>
-
             <p>
                 Your spending is lower than last month.
                 You could save an additional
                 <strong>₹2,500</strong> by reducing your
                 dining and shopping expenses.
             </p>
-
             <button class="ai-action-btn">
                 View insights
                 <i class="fas fa-arrow-right"></i>
             </button>
-
         </div>
-
     </div>
 
 </div>
 
+<!-- ============================================
+     SCRIPTS
+============================================ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard-charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 {% endblock %}
