@@ -780,7 +780,6 @@ function checkPasswordMatch() {
 
 // 7. Handle Register Form Submission
 function handleRegister(event) {
-    event.preventDefault();
     clearErrors();
     
     const fullname = document.getElementById('fullname').value;
@@ -835,16 +834,11 @@ function handleRegister(event) {
         alert('Please agree to the Terms of Service and Privacy Policy');
         isValid = false;
     }
-    
     if (isValid) {
-        const btn = document.querySelector('.auth-btn');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
-        btn.disabled = true;
-        
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 1500);
-    }
+    const btn = document.querySelector('.auth-btn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+    btn.disabled = true;
+}
 }
 
 // 8. DOM Content Loaded

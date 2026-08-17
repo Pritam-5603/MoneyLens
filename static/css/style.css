@@ -930,6 +930,16 @@ ul{
     box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.2) !important;
 }
 
+.login-popup {
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
 
 
 /* ===========================
@@ -1175,33 +1185,32 @@ ul{
 /* =========================================================
    1. DASHBOARD LAYOUT
 ========================================================= */
-
 .dashboard-layout {
     display: flex;
     min-height: 100vh;
     background: #f7fafc;
 }
 
-
 /* =========================================================
    2. SIDEBAR
 ========================================================= */
 
 .dashboard-sidebar {
-    width: 220px;
+    width: 240px;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
     background: #ffffff;
-    border-right: 1px solid #e2e8f0;
+    border-right: none;  /* Remove border */
+    box-shadow: none;    /* Remove shadow */
     display: flex;
     flex-direction: column;
     z-index: 1000;
     transition: transform 0.3s ease;
     overflow-y: auto;
+    flex-shrink: 0;
 }
-
 /* Logo */
 .sidebar-logo {
     padding: 24px 22px;
@@ -1310,13 +1319,13 @@ ul{
 /* =========================================================
    3. MAIN AREA
 ========================================================= */
-
 .dashboard-main {
     flex: 1;
-    margin-left: 220px;
+    margin-left: 240px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: #f7fafc;
 }
 
 
@@ -1324,11 +1333,12 @@ ul{
    4. TOPBAR
 ========================================================= */
 
+/* Topbar */
 .dashboard-topbar {
     height: 68px;
     background: #ffffff;
     border-bottom: 1px solid #e2e8f0;
-    padding: 0 30px;
+    padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1465,13 +1475,9 @@ ul{
 
 .dashboard-content {
     width: 100%;
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 30px 32px 45px;
+    padding: 24px 28px 40px 28px;
     box-sizing: border-box;
 }
-
-
 /* =========================================================
    6. WELCOME HEADER
 ========================================================= */
@@ -1785,7 +1791,7 @@ ul{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 120px;
+    width: 350px;
 }
 
 .spending-total strong {

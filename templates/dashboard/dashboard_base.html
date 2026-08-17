@@ -12,71 +12,69 @@ Dashboard | MoneyLens
      Design: Flex layout with fixed sidebar
 ============================================ -->
 <div class="dashboard-layout">
+<!-- ============================================
+     SIDEBAR
+============================================ -->
+<aside class="dashboard-sidebar">
 
-    <!-- ==========================================
-         SIDEBAR
-         Design: Fixed width, dark gradient background
-         Purpose: Primary navigation
-    ========================================== -->
-    <aside class="dashboard-sidebar">
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <a href="{{ url_for('dashboard') }}" class="logo-link">
+            <span class="logo-icon">💰</span>
+            <span class="logo-text">MoneyLens</span>
+        </a>
+    </div>
 
-        <!-- Logo Section -->
-        <div class="sidebar-logo">
-            <a href="{{ url_for('dashboard') }}" class="logo-link">
-                <span class="logo-icon">💰</span>
-                <span class="logo-text">MoneyLens</span>
-            </a>
-        </div>
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'transactions' %}active{% endif %}">
+                <a href="{{ url_for('transactions') }}" class="nav-link">
+                    <span class="nav-icon">💳</span>
+                    <span class="nav-label">Transactions</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'analytics' %}active{% endif %}">
+                <a href="{{ url_for('analytics') }}" class="nav-link">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'budgets' %}active{% endif %}">
+                <a href="{{ url_for('budgets') }}" class="nav-link">
+                    <span class="nav-icon">🎯</span>
+                    <span class="nav-label">Budgets</span>
+                </a>
+            </li>
+            <li class="nav-item {% if request.endpoint == 'profile' %}active{% endif %}">
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">Profile</span>
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
 
-        <!-- Navigation Menu -->
-        <nav class="sidebar-nav">
-            <ul class="nav-list">
-                <li class="nav-item active">
-                    <a href="{{ url_for('dashboard') }}" class="nav-link">
-                        <span class="nav-icon">📊</span>
-                        <span class="nav-label">Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('transactions') }}" class="nav-link">
-                        <span class="nav-icon">💳</span>
-                        <span class="nav-label">Transactions</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('analytics') }}" class="nav-link">
-                        <span class="nav-icon">📈</span>
-                        <span class="nav-label">Analytics</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('budgets') }}" class="nav-link">
-                        <span class="nav-icon">🎯</span>
-                        <span class="nav-label">Budgets</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ url_for('profile') }}" class="nav-link">
-                        <span class="nav-icon">👤</span>
-                        <span class="nav-label">Profile</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+    <!-- Footer -->
+    <div class="sidebar-footer">
+        <a href="{{ url_for('settings') }}" class="footer-link">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Settings</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="footer-link logout-link">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-label">Logout</span>
+        </a>
+    </div>
 
-        <!-- Footer Links (Settings + Logout) -->
-        <div class="sidebar-footer">
-            <a href="{{ url_for('settings') }}" class="footer-link">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-label">Settings</span>
-            </a>
-            <a href="{{ url_for('logout') }}" class="footer-link logout-link">
-                <span class="nav-icon">🚪</span>
-                <span class="nav-label">Logout</span>
-            </a>
-        </div>
-
-    </aside>
+</aside>
 
     <!-- ==========================================
          MAIN CONTENT AREA

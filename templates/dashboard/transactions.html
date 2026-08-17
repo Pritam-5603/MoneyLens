@@ -300,11 +300,11 @@
         </div>
         
         <div class="modal-body">
-            <form id="addTransactionForm">
+            <form id="addTransactionForm" method="POST" action="{{ url_for('transactions') }}">
                 <!-- Transaction Type -->
                 <div class="form-group">
                     <label for="transactionType">Type</label>
-                    <select id="transactionType" class="form-control" required onchange="updateCategories()">
+                    <select id="transactionType" name="transaction_type" class="form-control" required onchange="updateCategories()">
                         <option value="income">💰 Income</option>
                         <option value="expense">💳 Expense</option>
                     </select>
@@ -318,6 +318,7 @@
                             type="number" 
                             step="0.01" 
                             id="amount" 
+                            name="amount"
                             class="form-control" 
                             placeholder="0.00" 
                             required
@@ -328,6 +329,7 @@
                         <input 
                             type="date" 
                             id="date" 
+                            name="date"
                             class="form-control" 
                             value="{{ current_date }}"
                             required
@@ -340,7 +342,8 @@
                     <label for="description">Description</label>
                     <input 
                         type="text" 
-                        id="description" 
+                        id="description"
+                        name="description" 
                         class="form-control" 
                         placeholder="What was this for?" 
                         required
@@ -350,7 +353,7 @@
                 <!-- Category -->
                 <div class="form-group">
                     <label for="category">Category</label>
-                    <select id="category" class="form-control" required>
+                    <select id="category" name="category" class="form-control" required>
                         <!-- Income Categories -->
                         <optgroup label="Income" id="incomeCategories">
                             <option value="salary">💼 Salary</option>
@@ -381,6 +384,7 @@
                     <label for="note">Note (Optional)</label>
                     <textarea 
                         id="note" 
+                        name="note"
                         class="form-control" 
                         rows="2" 
                         placeholder="Additional details..."
