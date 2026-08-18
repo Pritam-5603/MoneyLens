@@ -1,220 +1,388 @@
-{% extends "dashboard/dashboard_base.html" %}
-
-{% block dashboard_content %}
+{% extends "dashboard/dashboard_base.html" %} {% block dashboard_content %}
 
 <!-- ============================================
      BUDGETS PAGE HEADER
 ============================================ -->
 <div class="budgets-header">
-    <div>
-        <h1 class="budgets-title">Budgets</h1>
-        <p class="budgets-subtitle">Track your spending limits by category</p>
-    </div>
-    <button class="btn-primary" id="openBudgetModal">
-        <i class="fas fa-plus-circle"></i> Create Budget
-    </button>
+  <div>
+    <h1 class="budgets-title">Budgets</h1>
+    <p class="budgets-subtitle">Track your spending limits by category</p>
+  </div>
+
+  <button class="btn-primary" id="openBudgetModal">
+    <i class="fas fa-plus-circle"></i>
+    Create Budget
+  </button>
 </div>
 
 <!-- ============================================
      BUDGETS STATS
 ============================================ -->
 <div class="budgets-stats">
-    <!-- Total Budget -->
-    <div class="budget-stat-card">
-        <div class="budget-stat-header">
-            <span class="budget-stat-label">Total Budget</span>
-            <i class="fas fa-wallet budget-stat-icon"></i>
-        </div>
-        <div class="budget-stat-value">₹65,000</div>
-        <div class="budget-stat-footer">Across all categories</div>
+  <!-- Total Budget -->
+  <div class="budget-stat-card">
+    <div class="budget-stat-header">
+      <span class="budget-stat-label">Total Budget</span>
+      <i class="fas fa-wallet budget-stat-icon"></i>
     </div>
 
-    <!-- Total Spent -->
-    <div class="budget-stat-card">
-        <div class="budget-stat-header">
-            <span class="budget-stat-label">Total Spent</span>
-            <i class="fas fa-arrow-up budget-stat-icon"></i>
-        </div>
-        <div class="budget-stat-value">₹41,200</div>
-        <div class="budget-stat-footer">From budgeted categories</div>
+    <div class="budget-stat-value">₹{{ "{:,.0f}".format(total_budget) }}</div>
+
+    <div class="budget-stat-footer">Across all categories</div>
+  </div>
+
+  <!-- Total Spent -->
+  <div class="budget-stat-card">
+    <div class="budget-stat-header">
+      <span class="budget-stat-label">Total Spent</span>
+      <i class="fas fa-arrow-up budget-stat-icon"></i>
     </div>
 
-    <!-- Remaining -->
-    <div class="budget-stat-card">
-        <div class="budget-stat-header">
-            <span class="budget-stat-label">Remaining</span>
-            <i class="fas fa-piggy-bank budget-stat-icon"></i>
-        </div>
-        <div class="budget-stat-value">₹23,800</div>
-        <div class="budget-stat-footer">Left to spend</div>
+    <div class="budget-stat-value">₹{{ "{:,.0f}".format(total_spent) }}</div>
+
+    <div class="budget-stat-footer">From budgeted categories</div>
+  </div>
+
+  <!-- Remaining -->
+  <div class="budget-stat-card">
+    <div class="budget-stat-header">
+      <span class="budget-stat-label">Remaining</span>
+      <i class="fas fa-piggy-bank budget-stat-icon"></i>
     </div>
+
+    <div class="budget-stat-value">
+      ₹{{ "{:,.0f}".format(total_remaining) }}
+    </div>
+
+    <div class="budget-stat-footer">Left to spend</div>
+  </div>
 </div>
 
 <!-- ============================================
      BUDGETS LIST
 ============================================ -->
 <div class="budgets-list">
+  {% if budgets %} {% for budget in budgets %}
 
-    <!-- Budget Item 1: Housing -->
-    <div class="budget-item">
-        <div class="budget-item-header">
-            <div class="budget-item-info">
-                <div class="budget-item-icon housing">
-                    <i class="fas fa-home"></i>
-                </div>
-                <div>
-                    <h3 class="budget-item-name">Housing</h3>
-                    <span class="budget-item-date">August 2026</span>
-                </div>
-            </div>
-            <div class="budget-item-actions">
-                <button class="budget-edit-btn" onclick="editBudget(1)"><i class="fas fa-edit"></i></button>
-                <button class="budget-delete-btn" onclick="deleteBudget(1)"><i class="fas fa-trash"></i></button>
-            </div>
+  <!-- ============================================
+             BUDGET ITEM
+        ============================================ -->
+  <div class="budget-item {% if budget.percentage >= 90 %}warning{% endif %}">
+    <!-- Header -->
+    <div class="budget-item-header">
+      <div class="budget-item-info">
+        <!-- Category Icon -->
+        <div
+          class="budget-item-icon {{ budget.category|lower|replace(' ', '-') }}"
+        >
+          {% if budget.category|lower == "housing" %}
+          <i class="fas fa-home"></i>
+
+          {% elif budget.category|lower == "food" or budget.category|lower ==
+          "food & dining" %}
+          <i class="fas fa-utensils"></i>
+
+          {% elif budget.category|lower == "transport" %}
+          <i class="fas fa-car"></i>
+
+          {% elif budget.category|lower == "shopping" %}
+          <i class="fas fa-shopping-bag"></i>
+
+          {% elif budget.category|lower == "entertainment" %}
+          <i class="fas fa-film"></i>
+
+          {% elif budget.category|lower == "bills" %}
+          <i class="fas fa-file-invoice"></i>
+
+          {% elif budget.category|lower == "healthcare" %}
+          <i class="fas fa-heartbeat"></i>
+
+          {% elif budget.category|lower == "education" %}
+          <i class="fas fa-book"></i>
+
+          {% elif budget.category|lower == "travel" %}
+          <i class="fas fa-plane"></i>
+
+          {% else %}
+          <i class="fas fa-wallet"></i>
+          {% endif %}
         </div>
 
-        <div class="budget-item-details">
-            <div class="budget-amounts">
-                <span>Budget: <strong>₹25,000</strong></span>
-                <span>Spent: <strong class="budget-spent">₹21,500</strong></span>
-                <span>Remaining: <strong class="budget-remaining">₹3,500</strong></span>
-                <span class="budget-percentage">86%</span>
-            </div>
-            <div class="budget-progress">
-                <div class="budget-progress-bar">
-                    <span class="budget-progress-fill" style="width: 86%;"></span>
-                </div>
-            </div>
+        <!-- Category Name + Date -->
+        <div>
+          <h3 class="budget-item-name">{{ budget.category }}</h3>
+
+          <span class="budget-item-date">
+            {{ budget.start_date.strftime('%B %Y') }} {% if budget.end_date %} -
+            {{ budget.end_date.strftime('%B %Y') }} {% endif %}
+          </span>
         </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="budget-item-actions">
+
+    <button
+        type="button"
+        class="budget-edit-btn"
+        data-budget-id="{{ budget.id }}"
+        title="Edit Budget"
+    >
+        <i class="fas fa-edit"></i>
+    </button>
+
+    <button
+        type="button"
+        class="budget-delete-btn"
+        data-budget-id="{{ budget.id }}"
+        title="Delete Budget"
+    >
+        <i class="fas fa-trash"></i>
+    </button>
+
+</div>
     </div>
 
-    <!-- Budget Item 2: Food & Dining (Warning) -->
-    <div class="budget-item warning">
-        <div class="budget-item-header">
-            <div class="budget-item-info">
-                <div class="budget-item-icon food">
-                    <i class="fas fa-utensils"></i>
-                </div>
-                <div>
-                    <h3 class="budget-item-name">Food & Dining</h3>
-                    <span class="budget-item-date">August 2026</span>
-                </div>
-            </div>
-            <div class="budget-item-actions">
-                <button class="budget-edit-btn" onclick="editBudget(2)"><i class="fas fa-edit"></i></button>
-                <button class="budget-delete-btn" onclick="deleteBudget(2)"><i class="fas fa-trash"></i></button>
-            </div>
-        </div>
+    <!-- ============================================
+                 BUDGET DETAILS
+            ============================================ -->
+    <div class="budget-item-details">
+      <div class="budget-amounts">
+        <!-- Budget -->
+        <span>
+          Budget:
+          <strong> ₹{{ "{:,.0f}".format(budget.amount) }} </strong>
+        </span>
 
-        <div class="budget-item-details">
-            <div class="budget-amounts">
-                <span>Budget: <strong>₹15,000</strong></span>
-                <span>Spent: <strong class="budget-spent">₹14,200</strong></span>
-                <span>Remaining: <strong class="budget-remaining">₹800</strong></span>
-                <span class="budget-percentage danger">95% ⚠️</span>
-            </div>
-            <div class="budget-progress">
-                <div class="budget-progress-bar">
-                    <span class="budget-progress-fill danger" style="width: 95%;"></span>
-                </div>
-            </div>
+        <!-- Spent -->
+        <span>
+          Spent:
+          <strong class="budget-spent">
+            ₹{{ "{:,.0f}".format(budget.spent) }}
+          </strong>
+        </span>
+
+        <!-- Remaining -->
+        <span>
+          Remaining:
+          <strong
+            class="{% if budget.remaining < 0 %}budget-danger{% else %}budget-remaining{% endif %}"
+          >
+            ₹{{ "{:,.0f}".format(budget.remaining) }}
+          </strong>
+        </span>
+
+        <!-- Percentage -->
+        <span
+          class="budget-percentage {% if budget.percentage >= 90 %} danger {% elif budget.percentage >= 75 %} warning-text {% endif %}"
+        >
+          {{ "{:.0f}".format(budget.percentage) }}% {% if budget.percentage >=
+          100 %} ⚠️ {% elif budget.percentage >= 90 %} ⚠️ {% endif %}
+        </span>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="budget-progress">
+        <div class="budget-progress-bar">
+          <span
+        class="budget-progress-fill {% if budget.percentage >= 90 %}danger{% elif budget.percentage >= 75 %}warning{% endif %}"
+        data-progress="{{ budget.progress }}"
+        ></span>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Budget Item 3: Transport -->
-    <div class="budget-item">
-        <div class="budget-item-header">
-            <div class="budget-item-info">
-                <div class="budget-item-icon transport">
-                    <i class="fas fa-car"></i>
-                </div>
-                <div>
-                    <h3 class="budget-item-name">Transport</h3>
-                    <span class="budget-item-date">August 2026</span>
-                </div>
-            </div>
-            <div class="budget-item-actions">
-                <button class="budget-edit-btn" onclick="editBudget(3)"><i class="fas fa-edit"></i></button>
-                <button class="budget-delete-btn" onclick="deleteBudget(3)"><i class="fas fa-trash"></i></button>
-            </div>
-        </div>
+  {% endfor %} {% else %}
 
-        <div class="budget-item-details">
-            <div class="budget-amounts">
-                <span>Budget: <strong>₹10,000</strong></span>
-                <span>Spent: <strong class="budget-spent">₹8,400</strong></span>
-                <span>Remaining: <strong class="budget-remaining">₹1,600</strong></span>
-                <span class="budget-percentage">84%</span>
-            </div>
-            <div class="budget-progress">
-                <div class="budget-progress-bar">
-                    <span class="budget-progress-fill" style="width: 84%;"></span>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- ============================================
+             EMPTY STATE
+        ============================================ -->
+  <div class="budget-empty-state">
+    <i class="fas fa-wallet empty-icon"></i>
 
-    <!-- Budget Item 4: Shopping -->
-    <div class="budget-item">
-        <div class="budget-item-header">
-            <div class="budget-item-info">
-                <div class="budget-item-icon shopping">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div>
-                    <h3 class="budget-item-name">Shopping</h3>
-                    <span class="budget-item-date">August 2026</span>
-                </div>
-            </div>
-            <div class="budget-item-actions">
-                <button class="budget-edit-btn" onclick="editBudget(4)"><i class="fas fa-edit"></i></button>
-                <button class="budget-delete-btn" onclick="deleteBudget(4)"><i class="fas fa-trash"></i></button>
-            </div>
-        </div>
+    <h3>No budgets created yet</h3>
 
-        <div class="budget-item-details">
-            <div class="budget-amounts">
-                <span>Budget: <strong>₹8,000</strong></span>
-                <span>Spent: <strong class="budget-spent">₹7,100</strong></span>
-                <span>Remaining: <strong class="budget-remaining">₹900</strong></span>
-                <span class="budget-percentage">89%</span>
-            </div>
-            <div class="budget-progress">
-                <div class="budget-progress-bar">
-                    <span class="budget-progress-fill" style="width: 89%;"></span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <p>Create your first budget to start tracking your spending limits.</p>
 
-    <!-- Empty State (Hidden by default) -->
-    <div class="budget-empty-state" style="display: none;">
-        <i class="fas fa-wallet empty-icon"></i>
-        <h3>No budgets created yet</h3>
-        <p>Create your first budget to start tracking your spending limits.</p>
-        <button class="btn-primary" id="emptyBudgetBtn">
-            <i class="fas fa-plus-circle"></i> Create Budget
-        </button>
-    </div>
+    <button class="btn-primary" id="emptyBudgetBtn">
+      <i class="fas fa-plus-circle"></i>
+      Create Budget
+    </button>
+  </div>
 
+  {% endif %}
 </div>
 
 <!-- ============================================
      CREATE BUDGET MODAL
 ============================================ -->
 <div class="modal" id="createBudgetModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2><i class="fas fa-wallet"></i> Create Budget</h2>
-            <span class="close-modal" id="closeBudgetModal">&times;</span>
+  <div class="modal-content">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>
+        <i class="fas fa-wallet"></i>
+        Create Budget
+      </h2>
+
+      <span class="close-modal" id="closeBudgetModal"> &times; </span>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <form
+        id="createBudgetForm"
+        method="POST"
+        action="{{ url_for('budgets') }}"
+      >
+        <!-- Category -->
+        <div class="form-group">
+          <label for="budgetCategory"> Category </label>
+
+          <select
+            id="budgetCategory"
+            name="category"
+            class="form-control"
+            required
+          >
+            <option value="">Select a category</option>
+
+            <option value="Housing">🏠 Housing</option>
+
+            <option value="Food & Dining">🍔 Food & Dining</option>
+
+            <option value="Transport">🚗 Transport</option>
+
+            <option value="Shopping">🛍️ Shopping</option>
+
+            <option value="Entertainment">🎬 Entertainment</option>
+
+            <option value="Bills">📄 Bills</option>
+
+            <option value="Healthcare">🏥 Healthcare</option>
+
+            <option value="Education">📚 Education</option>
+
+            <option value="Travel">✈️ Travel</option>
+
+            <option value="Other">📌 Other</option>
+          </select>
         </div>
 
+        <!-- Budget Amount -->
+        <div class="form-group">
+          <label for="budgetAmount"> Budget Amount (₹) </label>
+
+          <input
+            type="number"
+            id="budgetAmount"
+            name="amount"
+            class="form-control"
+            placeholder="Enter budget amount"
+            min="0"
+            step="100"
+            required
+          />
+        </div>
+
+        <!-- Start Date -->
+        <div class="form-group">
+          <label for="budgetStartDate"> Start Date </label>
+
+          <input
+            type="date"
+            id="budgetStartDate"
+            name="start_date"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- End Date -->
+        <div class="form-group">
+          <label for="budgetEndDate"> End Date </label>
+
+          <input
+            type="date"
+            id="budgetEndDate"
+            name="end_date"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Note -->
+        <div class="form-group">
+          <label for="budgetNote"> Note (Optional) </label>
+
+          <textarea
+            id="budgetNote"
+            name="note"
+            class="form-control"
+            rows="2"
+            placeholder="Add a note about this budget..."
+          ></textarea>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="cancelBudgetBtn">
+        Cancel
+      </button>
+
+      <button type="submit" form="createBudgetForm" class="btn-primary">
+        <i class="fas fa-save"></i>
+        Save Budget
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     EDIT BUDGET MODAL
+============================================ -->
+
+<div class="modal" id="editBudgetModal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>
+                <i class="fas fa-edit"></i>
+                Edit Budget
+            </h2>
+
+            <span class="close-modal" id="closeEditBudgetModal">
+                &times;
+            </span>
+
+        </div>
+
+
         <div class="modal-body">
-            <form id="createBudgetForm">
+
+            <form id="editBudgetForm">
+
+                <input
+                    type="hidden"
+                    id="editBudgetId"
+                >
+
                 <div class="form-group">
-                    <label for="budgetCategory">Category</label>
-                    <select id="budgetCategory" class="form-control" required>
-                        <option value="">Select a category</option>
+
+                    <label for="editBudgetCategory">
+                        Category
+                    </label>
+
+                    <select
+                        id="editBudgetCategory"
+                        class="form-control"
+                        required
+                    >
                         <option value="housing">🏠 Housing</option>
                         <option value="food">🍔 Food & Dining</option>
                         <option value="transport">🚗 Transport</option>
@@ -226,37 +394,99 @@
                         <option value="travel">✈️ Travel</option>
                         <option value="other">📌 Other</option>
                     </select>
+
                 </div>
 
-                <div class="form-group">
-                    <label for="budgetAmount">Budget Amount (₹)</label>
-                    <input type="number" id="budgetAmount" class="form-control" placeholder="Enter budget amount" min="0" step="100" required>
-                </div>
 
                 <div class="form-group">
-                    <label for="budgetMonth">Month</label>
-                    <input type="month" id="budgetMonth" class="form-control" required>
+
+                    <label for="editBudgetAmount">
+                        Budget Amount (₹)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editBudgetAmount"
+                        class="form-control"
+                        min="0"
+                        step="100"
+                        required
+                    >
+
                 </div>
 
+
                 <div class="form-group">
-                    <label for="budgetNote">Note (Optional)</label>
-                    <textarea id="budgetNote" class="form-control" rows="2" placeholder="Add a note about this budget..."></textarea>
+
+                    <label for="editBudgetStartDate">
+                        Start Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editBudgetStartDate"
+                        class="form-control"
+                        required
+                    >
+
                 </div>
+
+
+                <div class="form-group">
+
+                    <label for="editBudgetEndDate">
+                        End Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editBudgetEndDate"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
             </form>
+
         </div>
+
 
         <div class="modal-footer">
-            <button type="button" class="btn-secondary" id="cancelBudgetBtn">Cancel</button>
-            <button type="submit" form="createBudgetForm" class="btn-primary">
-                <i class="fas fa-save"></i> Save Budget
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelEditBudgetBtn"
+            >
+                Cancel
             </button>
+
+            <button
+                type="submit"
+                form="editBudgetForm"
+                class="btn-primary"
+            >
+                <i class="fas fa-save"></i>
+                Update Budget
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
 <!-- ============================================
      SCRIPTS
 ============================================ -->
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+document.querySelectorAll(".budget-progress-fill").forEach(function (bar) {
+    const progress = parseFloat(bar.dataset.progress) || 0;
+
+    bar.style.width = Math.min(progress, 100) + "%";
+});
+</script>
 
 {% endblock %}

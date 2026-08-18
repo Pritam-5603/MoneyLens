@@ -156,57 +156,96 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Filter transactions
 function filterTransactions() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const category = document.getElementById('categoryFilter').value;
-    const dateFilter = document.getElementById('dateFilter').value;
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    // Show/hide date range
-    const dateRange = document.getElementById('dateRange');
-    if (dateFilter === 'custom') {
-        dateRange.style.display = 'flex';
-    } else {
-        dateRange.style.display = 'none';
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const dateFilterElement = document.getElementById('dateFilter');
+
+    if (!searchInput || !categoryFilter || !dateFilterElement) {
+        return;
     }
-    
-    // Get all transaction items
+
+    const search = searchInput.value.toLowerCase();
+    const category = categoryFilter.value;
+    const dateFilter = dateFilterElement.value;
+
+    const dateRange = document.getElementById('dateRange');
+
+    if (dateFilter === 'custom') {
+        if (dateRange) {
+            dateRange.style.display = 'flex';
+        }
+    } else {
+        if (dateRange) {
+            dateRange.style.display = 'none';
+        }
+    }
+
     const items = document.querySelectorAll('.transaction-item');
     let visibleCount = 0;
-    
+
     items.forEach(item => {
         let show = true;
-        
+
         // Search filter
         if (search) {
-            const name = item.querySelector('.transaction-name').textContent.toLowerCase();
-            if (!name.includes(search)) show = false;
+            const nameElement = item.querySelector('.transaction-name');
+
+            if (nameElement) {
+                const name = nameElement.textContent.toLowerCase();
+
+                if (!name.includes(search)) {
+                    show = false;
+                }
+            }
         }
-        
+
         // Category filter
         if (category && show) {
             const itemCategory = item.dataset.category;
-            if (itemCategory !== category) show = false;
-        }
-        
-        // Date filter (simplified - just for demo)
-        if (dateFilter !== 'all' && show) {
-            const itemDate = new Date(item.dataset.date);
-            const today = new Date();
-            
-            if (dateFilter === 'today') {
-                if (itemDate.toDateString() !== today.toDateString()) show = false;
-            } else if (dateFilter === 'week') {
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                if (itemDate < weekAgo) show = false;
-            } else if (dateFilter === 'month') {
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                if (itemDate < monthAgo) show = false;
+
+            if (itemCategory !== category) {
+                show = false;
             }
         }
-        
+
+        // Date filter
+        if (dateFilter !== 'all' && show) {
+            const itemDateValue = item.dataset.date;
+
+            if (itemDateValue) {
+                const itemDate = new Date(itemDateValue);
+                const today = new Date();
+
+                if (dateFilter === 'today') {
+
+                    if (
+                        itemDate.toDateString() !==
+                        today.toDateString()
+                    ) {
+                        show = false;
+                    }
+
+                } else if (dateFilter === 'week') {
+
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+
+                    if (itemDate < weekAgo) {
+                        show = false;
+                    }
+
+                } else if (dateFilter === 'month') {
+
+                    const monthAgo = new Date();
+                    monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+                    if (itemDate < monthAgo) {
+                        show = false;
+                    }
+                }
+            }
+        }
+
         if (show) {
             item.style.display = 'flex';
             visibleCount++;
@@ -214,38 +253,57 @@ function filterTransactions() {
             item.style.display = 'none';
         }
     });
-    
-    // Show/hide empty state
+
+    // Empty state
     const emptyState = document.getElementById('emptyState');
-    if (visibleCount === 0) {
-        emptyState.style.display = 'block';
-    } else {
-        emptyState.style.display = 'none';
+
+    if (emptyState) {
+        if (visibleCount === 0) {
+            emptyState.style.display = 'block';
+        } else {
+            emptyState.style.display = 'none';
+        }
     }
-    
-    // Update count
+
+    // Update transaction count
     const countElement = document.querySelector('.list-count');
+
     if (countElement) {
-        countElement.textContent = 
+        countElement.textContent =
             `Showing ${visibleCount} of ${items.length} transactions`;
     }
 }
+
 
 // Apply filters
 function applyFilters() {
     filterTransactions();
 }
 
+
 // Clear filters
 function clearFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('categoryFilter').value = '';
-    document.getElementById('dateFilter').value = 'all';
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    document.getElementById('dateRange').style.display = 'none';
+
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const dateRange = document.getElementById('dateRange');
+
+    if (searchInput) searchInput.value = '';
+    if (categoryFilter) categoryFilter.value = '';
+    if (dateFilter) dateFilter.value = 'all';
+    if (startDate) startDate.value = '';
+    if (endDate) endDate.value = '';
+
+    if (dateRange) {
+        dateRange.style.display = 'none';
+    }
+
     filterTransactions();
 }
+
 
 // ============================================
 // 2. MODAL FUNCTIONS
@@ -253,34 +311,71 @@ function clearFilters() {
 
 // Open modal
 function openModal() {
-    const modal = document.getElementById('addTransactionModal');
+
+    const modal =
+        document.getElementById('addTransactionModal');
+
+    const form =
+        document.getElementById('addTransactionForm');
+
     if (modal) {
+
         modal.style.display = 'flex';
+
         document.body.style.overflow = 'hidden';
+
         // Reset form
-        document.getElementById('addTransactionForm').reset();
-        // Set default date
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').value = today;
-        // Reset category visibility
+        if (form) {
+            form.reset();
+        }
+
+        // Set today's date
+        const dateInput =
+            document.getElementById('date');
+
+        if (dateInput) {
+
+            const today =
+                new Date().toISOString().split('T')[0];
+
+            dateInput.value = today;
+        }
+
+        // Update categories
         updateCategories();
     }
 }
 
+
 // Close modal
 function closeModal() {
-    const modal = document.getElementById('addTransactionModal');
+
+    const modal =
+        document.getElementById('addTransactionModal');
+
     if (modal) {
+
         modal.style.display = 'none';
+
         document.body.style.overflow = 'auto';
     }
 }
 
-// Update categories based on transaction type
+
+// ============================================
+// 3. UPDATE TRANSACTION CATEGORIES
+// ============================================
+
 function updateCategories() {
 
     const typeSelect =
-        document.getElementById("transactionType");
+        document.getElementById('transactionType');
+
+    const incomeGroup =
+        document.getElementById('incomeCategories');
+
+    const expenseGroup =
+        document.getElementById('expenseCategories');
 
     if (!typeSelect) {
         return;
@@ -288,76 +383,143 @@ function updateCategories() {
 
     const type = typeSelect.value;
 
-    const incomeGroup =
-        document.getElementById("incomeCategories");
-
-    const expenseGroup =
-        document.getElementById("expenseCategories");
-
-    if (type === "income") {
+    if (type === 'income') {
 
         if (incomeGroup) {
-            incomeGroup.style.display = "";
+            incomeGroup.style.display = '';
         }
 
         if (expenseGroup) {
-            expenseGroup.style.display = "none";
+            expenseGroup.style.display = 'none';
         }
 
     } else {
 
         if (incomeGroup) {
-            incomeGroup.style.display = "none";
+            incomeGroup.style.display = 'none';
         }
 
         if (expenseGroup) {
-            expenseGroup.style.display = "";
+            expenseGroup.style.display = '';
         }
     }
 }
+
+// ==========================================
+// TRANSACTION HISTORY MODAL
+// ==========================================
+
+const historyBtn = document.getElementById("historyBtn");
+const historyModal = document.getElementById("historyModal");
+const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+
+if (historyBtn && historyModal) {
+
+    historyBtn.addEventListener("click", function () {
+
+        historyModal.style.display = "flex";
+
+    });
+
+}
+
+if (closeHistoryBtn && historyModal) {
+
+    closeHistoryBtn.addEventListener("click", function () {
+
+        historyModal.style.display = "none";
+
+    });
+
+}
 // ============================================
-// 3. TRANSACTION ACTIONS
+// 4. ADD TRANSACTION
 // ============================================
 
-// Edit transaction
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form =
+        document.getElementById('addTransactionForm');
+
+    if (form) {
+
+        console.log('✅ Add Transaction form found');
+
+        /*
+         * IMPORTANT:
+         *
+         * We DO NOT use event.preventDefault()
+         * here.
+         *
+         * The form must be allowed to submit
+         * normally to Flask.
+         */
+
+        form.addEventListener('submit', function () {
+
+            console.log('🔥 Sending transaction to Flask...');
+
+        });
+    } else {
+
+        console.log('❌ Add Transaction form NOT found');
+
+    }
+
+    // Set initial categories
+    updateCategories();
+});
+
+
+// ============================================
+// 5. TRANSACTION ACTIONS
+// ============================================
 function editTransaction(id) {
-    alert(`✏️ Edit transaction ${id}\n\nThis will open the edit modal with transaction data pre-filled.`);
-    // TODO: In real implementation:
-    // 1. Fetch transaction data from server
-    // 2. Populate modal fields
-    // 3. Open modal with "Edit" mode
-}
 
-// Delete transaction
-function deleteTransaction(id) {
-    if (confirm('⚠️ Are you sure you want to delete this transaction?\n\nThis action cannot be undone.')) {
-        alert(`🗑️ Transaction ${id} deleted!\n\n(This is a demo. Real implementation will remove it from database.)`);
-        // TODO: In real implementation:
-        // 1. Send delete request to server
-        // 2. Remove item from DOM
-        // 3. Update stats and counts
+    const modal = document.getElementById("editTransactionModal");
+    const form = document.getElementById("editTransactionForm");
+
+    if (!modal || !form) {
+        console.error("Edit modal or form not found");
+        return;
+    }
+
+    // Set the Flask UPDATE route
+    form.action = `/dashboard/transactions/edit/${id}`;
+
+    console.log("Edit transaction ID:", id);
+    console.log("Edit form action:", form.action);
+
+    // Open modal
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+}
+function closeEditModal() {
+
+    const modal = document.getElementById("editTransactionModal");
+
+    if (modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
 
-// ============================================
-// 4. PAGINATION
-// ============================================
+    const closeEditBtn =
+        document.getElementById("closeEditModalBtn");
 
-// Change page
-function changePage(page) {
-    if (page === 'prev') {
-        alert('📄 Previous page\n\n(Pagination coming soon with backend)');
-    } else if (page === 'next') {
-        alert('📄 Next page\n\n(Pagination coming soon with backend)');
-    } else {
-        alert(`📄 Page ${page}\n\n(Pagination coming soon with backend)`);
+    const cancelEditBtn =
+        document.getElementById("cancelEditBtn");
+
+    if (closeEditBtn) {
+        closeEditBtn.addEventListener("click", closeEditModal);
     }
-    // TODO: In real implementation:
-    // 1. Fetch transactions for that page from server
-    // 2. Update the transaction list
-    // 3. Update pagination active state
-}
 
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener("click", closeEditModal);
+    }
+
+});
 // ============================================
 // 5. DASHBOARD FUNCTIONS
 // ============================================
@@ -426,14 +588,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Form Submission ----
     const form = document.getElementById('addTransactionForm');
     if (form) {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            alert('✅ Transaction saved successfully!\n\n(This is a demo. Real implementation will save to database.)');
-            closeModal();
-            // TODO: In real implementation:
-            // 1. Send form data to server via AJAX
-            // 2. Add new transaction to list
-            // 3. Update stats
+        form.addEventListener('submit', function() {
+        console.log('🔥 Sending transaction to Flask...');
         });
     }
     
@@ -1018,401 +1174,888 @@ function initAnalytics() {
     console.log('✅ Analytics page initialized successfully!');
 }
 // ============================================
-// BUDGETS PAGE FUNCTIONS
+// BUDGETS PAGE
 // ============================================
 
-// Open Create Budget Modal
-function openBudgetModal() {
-    const modal = document.getElementById('createBudgetModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        // Set default month to current
-        const monthInput = document.getElementById('budgetMonth');
-        if (monthInput) {
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ============================================
+    // CREATE BUDGET MODAL
+    // ============================================
+
+    const createModal = document.getElementById("createBudgetModal");
+    const openBudgetBtn = document.getElementById("openBudgetModal");
+    const closeBudgetBtn = document.getElementById("closeBudgetModal");
+    const cancelBudgetBtn = document.getElementById("cancelBudgetBtn");
+    const emptyBudgetBtn = document.getElementById("emptyBudgetBtn");
+
+    function openBudgetModal() {
+
+        if (!createModal) return;
+
+        createModal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        // Set today's date as default start date
+        const startDate = document.getElementById("budgetStartDate");
+
+        if (startDate && !startDate.value) {
+
             const today = new Date();
-            monthInput.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+
+            startDate.value = `${year}-${month}-${day}`;
         }
     }
-}
 
-// Close Create Budget Modal
-function closeBudgetModal() {
-    const modal = document.getElementById('createBudgetModal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
 
-// Edit Budget
-function editBudget(id) {
-    alert(`✏️ Edit Budget ${id}\n\nThis will open the edit modal with budget data pre-filled.`);
-    // TODO: In real implementation, fetch budget data and populate modal
-}
+    function closeBudgetModal() {
 
-// Delete Budget
-function deleteBudget(id) {
-    if (confirm('⚠️ Are you sure you want to delete this budget?\n\nThis action cannot be undone.')) {
-        alert(`🗑️ Budget ${id} deleted!\n\n(This is a demo. Real implementation will remove it from database.)`);
-        // TODO: In real implementation, send delete request to server
-    }
-}
+        if (!createModal) return;
 
-// Handle Create Budget Form Submission
-function handleCreateBudget(event) {
-    event.preventDefault();
-    
-    const category = document.getElementById('budgetCategory').value;
-    const amount = document.getElementById('budgetAmount').value;
-    const month = document.getElementById('budgetMonth').value;
-    const note = document.getElementById('budgetNote').value;
-    
-    if (!category) {
-        alert('Please select a category');
-        return;
+        createModal.style.display = "none";
+        document.body.style.overflow = "auto";
     }
-    if (!amount || amount <= 0) {
-        alert('Please enter a valid budget amount');
-        return;
-    }
-    if (!month) {
-        alert('Please select a month');
-        return;
-    }
-    
-    alert(`✅ Budget created successfully!\n\nCategory: ${category}\nAmount: ₹${amount}\nMonth: ${month}\nNote: ${note || 'None'}`);
-    closeBudgetModal();
-    // TODO: In real implementation, send data to server via AJAX
-}
 
-// Initialize Budgets Page
-function initBudgets() {
-    console.log('📊 Budgets page initialized!');
-    
-    // Open modal button
-    const openBtn = document.getElementById('openBudgetModal');
-    if (openBtn) {
-        openBtn.addEventListener('click', openBudgetModal);
+
+    if (openBudgetBtn) {
+        openBudgetBtn.addEventListener("click", openBudgetModal);
     }
-    
-    // Empty state button
-    const emptyBtn = document.getElementById('emptyBudgetBtn');
-    if (emptyBtn) {
-        emptyBtn.addEventListener('click', openBudgetModal);
+
+    if (emptyBudgetBtn) {
+        emptyBudgetBtn.addEventListener("click", openBudgetModal);
     }
-    
-    // Close modal buttons
-    const closeBtn = document.getElementById('closeBudgetModal');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeBudgetModal);
+
+    if (closeBudgetBtn) {
+        closeBudgetBtn.addEventListener("click", closeBudgetModal);
     }
-    
-    const cancelBtn = document.getElementById('cancelBudgetBtn');
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', closeBudgetModal);
+
+    if (cancelBudgetBtn) {
+        cancelBudgetBtn.addEventListener("click", closeBudgetModal);
     }
-    
-    // Close on outside click
-    const modal = document.getElementById('createBudgetModal');
-    if (modal) {
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
+
+
+    // Close Create modal when clicking outside
+    if (createModal) {
+
+        window.addEventListener("click", function (event) {
+
+            if (event.target === createModal) {
                 closeBudgetModal();
             }
+
         });
     }
-    
-    // Close on ESC key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeBudgetModal();
-        }
-    });
-    
-    // Form submission
-    const form = document.getElementById('createBudgetForm');
-    if (form) {
-        form.addEventListener('submit', handleCreateBudget);
-    }
-}
 
-// Auto-init when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.budgets-header')) {
-        initBudgets();
+
+    // ============================================
+    // EDIT BUDGET
+    // ============================================
+
+    document.querySelectorAll(".budget-edit-btn").forEach(button => {
+
+        button.addEventListener("click", async function () {
+
+            const budgetId = this.dataset.budgetId;
+
+            try {
+
+                const response = await fetch(
+                    `/dashboard/budgets/${budgetId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to load budget");
+                }
+
+                const budget = await response.json();
+
+                document.getElementById("editBudgetId").value =
+                    budget.id;
+
+                document.getElementById("editBudgetCategory").value =
+                    budget.category;
+
+                document.getElementById("editBudgetAmount").value =
+                    budget.amount;
+
+                document.getElementById("editBudgetStartDate").value =
+                    budget.start_date;
+
+                document.getElementById("editBudgetEndDate").value =
+                    budget.end_date;
+
+
+                document.getElementById("editBudgetModal").style.display =
+                    "flex";
+
+                document.body.style.overflow = "hidden";
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Unable to load budget details.");
+
+            }
+
+        });
+
+    });
+
+
+    // ============================================
+    // EDIT BUDGET FORM
+    // ============================================
+
+    const editForm = document.getElementById("editBudgetForm");
+
+    if (editForm) {
+
+        editForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const budgetId =
+                document.getElementById("editBudgetId").value;
+
+            const formData = new FormData();
+
+            formData.append(
+                "category",
+                document.getElementById("editBudgetCategory").value
+            );
+
+            formData.append(
+                "amount",
+                document.getElementById("editBudgetAmount").value
+            );
+
+            formData.append(
+                "start_date",
+                document.getElementById("editBudgetStartDate").value
+            );
+
+            formData.append(
+                "end_date",
+                document.getElementById("editBudgetEndDate").value
+            );
+
+
+            try {
+
+                const response = await fetch(
+                    `/dashboard/budgets/edit/${budgetId}`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+                if (!response.ok) {
+                    throw new Error("Update failed");
+                }
+
+
+                window.location.href =
+                    "/dashboard/budgets";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Unable to update budget.");
+
+            }
+
+        });
+
     }
+
+
+    // ============================================
+    // CLOSE EDIT MODAL
+    // ============================================
+
+    const editModal =
+        document.getElementById("editBudgetModal");
+
+    const closeEditBtn =
+        document.getElementById("closeEditBudgetModal");
+
+    const cancelEditBtn =
+        document.getElementById("cancelEditBudgetBtn");
+
+
+    function closeEditModal() {
+
+        if (!editModal) return;
+
+        editModal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+
+
+    if (closeEditBtn) {
+        closeEditBtn.addEventListener(
+            "click",
+            closeEditModal
+        );
+    }
+
+
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener(
+            "click",
+            closeEditModal
+        );
+    }
+
+
+    // ============================================
+    // DELETE BUDGET
+    // ============================================
+
+    document.querySelectorAll(".budget-delete-btn").forEach(button => {
+
+        button.addEventListener("click", async function () {
+
+            const budgetId =
+                this.dataset.budgetId;
+
+
+            const confirmed = confirm(
+                "Are you sure you want to delete this budget?\n\nThis action cannot be undone."
+            );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                const response = await fetch(
+                    `/dashboard/budgets/delete/${budgetId}`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+                if (!response.ok) {
+                    throw new Error("Delete failed");
+                }
+
+
+                window.location.href =
+                    "/dashboard/budgets";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Unable to delete budget.");
+
+            }
+
+        });
+
+    });
+
+
+    // ============================================
+    // ESC KEY
+    // ============================================
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key !== "Escape") {
+            return;
+        }
+
+        closeBudgetModal();
+        closeEditModal();
+
+    });
+
+
+    // ============================================
+    // INITIALIZE
+    // ============================================
+
+    console.log("📊 Budgets page initialized!");
+
 });
 // ============================================
 // SETTINGS PAGE FUNCTIONS
 // ============================================
 
-// 1. Toggle Password Visibility
-function togglePasswordVisibility(inputId) {
-    const input = document.getElementById(inputId);
-    const toggleBtn = input?.parentElement?.querySelector('.settings-password-toggle');
-    
-    if (!input || !toggleBtn) return;
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-    } else {
-        input.type = 'password';
-        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
-    }
-}
 
-// 2. Set Theme
+// ============================================
+// 1. THEME
+// ============================================
+
 function setTheme(theme) {
+
     // Remove active class from all theme buttons
-    document.querySelectorAll('.settings-option[data-theme]').forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll(".settings-option").forEach(button => {
+        button.classList.remove("active");
     });
-    
-    // Add active class to selected theme
-    const selectedBtn = document.querySelector(`.settings-option[data-theme="${theme}"]`);
-    if (selectedBtn) {
-        selectedBtn.classList.add('active');
-    }
-    
-    // Apply theme (Demo)
-    if (theme === 'dark') {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
-    
-    console.log(`🌓 Theme changed to: ${theme}`);
-    
-    // Save preference (Demo)
-    localStorage.setItem('theme', theme);
-}
 
-// 3. Handle Profile Settings Form
-function handleProfileSettings(event) {
-    event.preventDefault();
-    
-    const fullName = document.getElementById('settingsFullName').value;
-    const email = document.getElementById('settingsEmail').value;
-    const username = document.getElementById('settingsUsername').value;
-    
-    if (!fullName || fullName.trim() === '') {
-        alert('Please enter your full name');
-        return;
-    }
-    
-    if (!email || email.trim() === '') {
-        alert('Please enter your email address');
-        return;
-    }
-    
-    if (!username || username.trim() === '') {
-        alert('Please enter your username');
-        return;
-    }
-    
-    // Show loading state
-    const btn = document.querySelector('#profileSettingsForm .settings-save-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    btn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        alert('✅ Profile updated successfully!');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }, 1500);
-}
 
-// 4. Handle Preferences Form
-function handlePreferences(event) {
-    event.preventDefault();
-    
-    const currency = document.getElementById('settingsCurrency').value;
-    const dateFormat = document.getElementById('settingsDateFormat').value;
-    const language = document.getElementById('settingsLanguage').value;
-    
-    const btn = document.querySelector('#preferencesForm .settings-save-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    btn.disabled = true;
-    
-    setTimeout(() => {
-        alert(`✅ Preferences saved!\n\nCurrency: ${currency}\nDate Format: ${dateFormat}\nLanguage: ${language}`);
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }, 1500);
-}
+    // Find selected theme button
+    document.querySelectorAll(".settings-option").forEach(button => {
 
-// 5. Handle Notifications Form
-function handleNotifications(event) {
-    event.preventDefault();
-    
-    const btn = document.querySelector('#notificationsForm .settings-save-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    btn.disabled = true;
-    
-    setTimeout(() => {
-        alert('✅ Notification settings saved successfully!');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }, 1500);
-}
-
-// 6. Confirm Delete Account
-function confirmDeleteAccount() {
-    if (confirm('⚠️ Are you sure you want to delete your account?\n\nThis action is PERMANENT and cannot be undone. All your data will be lost.')) {
-        if (confirm('⚠️ FINAL WARNING: Are you absolutely sure? This will delete everything.')) {
-            const btn = document.querySelector('.settings-danger-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                alert('🗑️ Account deleted successfully.');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                // Redirect to homepage
-                window.location.href = '/';
-            }, 2000);
+        if (
+            button.getAttribute("onclick") ===
+            `setTheme('${theme}')`
+        ) {
+            button.classList.add("active");
         }
+
+    });
+
+
+    // Update hidden theme input
+    const themeInput = document.getElementById("settingsTheme");
+
+    if (themeInput) {
+        themeInput.value = theme;
     }
+
+
+    // Apply theme
+    if (theme === "dark") {
+
+        document.body.classList.add("dark-theme");
+
+    }
+
+    else if (theme === "light") {
+
+        document.body.classList.remove("dark-theme");
+
+    }
+
+    else if (theme === "system") {
+
+        if (
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches
+        ) {
+
+            document.body.classList.add("dark-theme");
+
+        }
+
+        else {
+
+            document.body.classList.remove("dark-theme");
+
+        }
+
+    }
+
+
+    // Store temporarily in browser
+    // Database will be updated when
+    // Save Preferences is clicked.
+
+    localStorage.setItem("theme", theme);
 }
 
-// 7. Initialize Settings Page
-function initSettings() {
-    console.log('⚙️ Settings page initialized!');
-    
-    // --- Profile Settings ---
-    const profileForm = document.getElementById('profileSettingsForm');
-    if (profileForm) {
-        profileForm.addEventListener('submit', handleProfileSettings);
-    }
-    
-    // --- Preferences Form ---
-    const preferencesForm = document.getElementById('preferencesForm');
-    if (preferencesForm) {
-        preferencesForm.addEventListener('submit', handlePreferences);
-    }
-    
-    // --- Notifications Form ---
-    const notificationsForm = document.getElementById('notificationsForm');
-    if (notificationsForm) {
-        notificationsForm.addEventListener('submit', handleNotifications);
-    }
-    
-    // --- Load saved theme ---
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
+
+// ============================================
+// 2. LOAD THEME
+// ============================================
+
+function loadTheme() {
+
+    const themeInput =
+        document.getElementById("settingsTheme");
+
+
+    // First use database value from hidden input
+    if (themeInput && themeInput.value) {
+
+        const savedTheme = themeInput.value;
+
         setTheme(savedTheme);
+
+        return;
     }
+
+
+    // Fallback to localStorage
+    const savedTheme =
+        localStorage.getItem("theme");
+
+
+    if (savedTheme) {
+
+        setTheme(savedTheme);
+
+    }
+
 }
 
+
 // ============================================
-// AUTO-INITIALIZE
+// 3. PROFILE SETTINGS
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.settings-header')) {
-        initSettings();
+function initProfileSettings() {
+
+    const form =
+        document.getElementById(
+            "profileSettingsForm"
+        );
+
+
+    if (!form) {
+        return;
     }
-});
+
+
+    form.addEventListener("submit", function(event) {
+
+        const fullname =
+            document
+                .getElementById("settingsFullName")
+                .value
+                .trim();
+
+
+        const email =
+            document
+                .getElementById("settingsEmail")
+                .value
+                .trim();
+
+
+        const username =
+            document
+                .getElementById("settingsUsername")
+                .value
+                .trim();
+
+
+        // ========================================
+        // VALIDATION
+        // ========================================
+
+        if (!fullname) {
+
+            event.preventDefault();
+
+            alert("Please enter your full name.");
+
+            return;
+        }
+
+
+        if (!username) {
+
+            event.preventDefault();
+
+            alert("Please enter your username.");
+
+            return;
+        }
+
+
+        if (!email) {
+
+            event.preventDefault();
+
+            alert("Please enter your email address.");
+
+            return;
+        }
+
+
+        // ========================================
+        // ALLOW NORMAL FORM SUBMISSION
+        // ========================================
+
+        // Do NOT prevent default.
+        //
+        // The form will submit to:
+        // /dashboard/settings
+        //
+        // Flask will detect:
+        // action = profile
+
+    });
+
+}
+
+
+// ============================================
+// 4. PREFERENCES
+// ============================================
+
+function initPreferences() {
+
+    const form =
+        document.getElementById(
+            "preferencesForm"
+        );
+
+
+    if (!form) {
+        return;
+    }
+
+
+    form.addEventListener("submit", function(event) {
+
+        const currency =
+            document
+                .getElementById("settingsCurrency")
+                .value;
+
+
+        const dateFormat =
+            document
+                .getElementById("settingsDateFormat")
+                .value;
+
+
+        const language =
+            document
+                .getElementById("settingsLanguage")
+                .value;
+
+
+        const themeInput =
+            document.getElementById("settingsTheme");
+
+
+        // ========================================
+        // VALIDATION
+        // ========================================
+
+        if (!currency) {
+
+            event.preventDefault();
+
+            alert("Please select a currency.");
+
+            return;
+        }
+
+
+        if (!dateFormat) {
+
+            event.preventDefault();
+
+            alert("Please select a date format.");
+
+            return;
+        }
+
+
+        if (!language) {
+
+            event.preventDefault();
+
+            alert("Please select a language.");
+
+            return;
+        }
+
+
+        if (!themeInput || !themeInput.value) {
+
+            event.preventDefault();
+
+            alert("Please select a theme.");
+
+            return;
+        }
+
+
+        // ========================================
+        // ALLOW NORMAL FORM SUBMISSION
+        // ========================================
+
+        // Do NOT prevent default.
+        //
+        // Form submits to:
+        // /dashboard/settings
+        //
+        // Flask will detect:
+        // action = preferences
+
+    });
+
+}
+
+
+// ============================================
+// 5. NOTIFICATION SETTINGS
+// ============================================
+
+function initNotifications() {
+
+    const form =
+        document.getElementById(
+            "notificationsForm"
+        );
+
+
+    if (!form) {
+        return;
+    }
+
+
+    form.addEventListener("submit", function(event) {
+
+        const checkboxes =
+            form.querySelectorAll(
+                "input[type='checkbox']"
+            );
+
+
+        // Make sure all five checkboxes exist
+        if (checkboxes.length !== 5) {
+
+            event.preventDefault();
+
+            console.error(
+                "Notification checkbox configuration error."
+            );
+
+            return;
+        }
+
+
+        // ========================================
+        // ALLOW NORMAL FORM SUBMISSION
+        // ========================================
+
+        // IMPORTANT:
+        //
+        // Checked checkboxes are automatically
+        // sent to Flask.
+        //
+        // Unchecked checkboxes are not sent.
+        //
+        // Flask handles this using:
+        //
+        // request.form.get(...)
+        //
+        // and converts missing values to 0.
+
+    });
+
+}
+
+
+// ============================================
+// 6. DELETE ACCOUNT
+// ============================================
+
+function confirmDeleteAccount() {
+
+    const firstConfirm = confirm(
+
+        "⚠️ Are you sure you want to delete your account?\n\n" +
+
+        "All your transactions, budgets and account data " +
+
+        "will be permanently deleted."
+
+    );
+
+
+    if (!firstConfirm) {
+        return;
+    }
+
+
+    const secondConfirm = confirm(
+
+        "This action cannot be undone.\n\n" +
+
+        "Do you really want to permanently delete your account?"
+
+    );
+
+
+    if (!secondConfirm) {
+        return;
+    }
+
+
+    // ========================================
+    // CREATE DELETE FORM
+    // ========================================
+
+    const form =
+        document.createElement("form");
+
+
+    form.method = "POST";
+
+    form.action =
+        "/dashboard/settings/delete-account";
+
+
+    document.body.appendChild(form);
+
+
+    form.submit();
+
+}
+
+
+// ============================================
+// 7. INITIALIZE SETTINGS PAGE
+// ============================================
+
+function initSettings() {
+
+    console.log(
+        "⚙️ Settings page initialized!"
+    );
+
+
+    loadTheme();
+
+    initProfileSettings();
+
+    initPreferences();
+
+    initNotifications();
+
+}
+
+
+// ============================================
+// 8. AUTO INITIALIZE
+// ============================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        if (
+            document.querySelector(
+                ".settings-header"
+            )
+        ) {
+
+            initSettings();
+
+        }
+
+    }
+);
 // ============================================
 // PROFILE PAGE FUNCTIONS
 // ============================================
 
-// 1. Preview Profile Picture
+
+// ============================================
+// 1. PREVIEW PROFILE PICTURE
+// ============================================
+
 function previewProfilePicture(input) {
+
     if (input.files && input.files[0]) {
+
         const reader = new FileReader();
+
         reader.onload = function(e) {
-            const avatar = document.querySelector('.profile-avatar-large');
+
+            const avatar = document.querySelector(".profile-avatar-large");
+
             if (avatar) {
-                avatar.style.backgroundImage = `url(${e.target.result})`;
-                avatar.style.backgroundSize = 'cover';
-                avatar.style.backgroundPosition = 'center';
-                avatar.textContent = '';
+
+                avatar.style.backgroundImage =
+                    `url(${e.target.result})`;
+
+                avatar.style.backgroundSize = "cover";
+                avatar.style.backgroundPosition = "center";
+
+                const avatarText =
+                    avatar.querySelector(".profile-avatar-text");
+
+                if (avatarText) {
+                    avatarText.style.display = "none";
+                }
             }
         };
+
         reader.readAsDataURL(input.files[0]);
     }
 }
 
-// 2. Handle Profile Form Submission
-function handleProfileUpdate(event) {
-    event.preventDefault();
-    
-    const fullName = document.getElementById('profileFullName').value;
-    const username = document.getElementById('profileUsername').value;
-    const email = document.getElementById('profileEmail').value;
-    const phone = document.getElementById('profilePhone').value;
-    const bio = document.getElementById('profileBio').value;
-    
-    // Validate
-    if (!fullName || fullName.trim() === '') {
-        alert('Please enter your full name');
-        return;
-    }
-    
-    if (!email || email.trim() === '') {
-        alert('Please enter your email address');
-        return;
-    }
-    
-    // Show loading state
-    const btn = document.querySelector('.profile-save-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-    btn.disabled = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-        alert('✅ Profile updated successfully!');
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        
-        // Update name and email in avatar section
-        document.querySelector('.profile-name').textContent = fullName;
-        document.querySelector('.profile-email').textContent = email;
-        
-        // Update avatar initial
-        const avatarText = document.querySelector('.profile-avatar-text');
-        if (avatarText) {
-            avatarText.textContent = fullName.charAt(0).toUpperCase();
-        }
-    }, 1500);
-}
 
-// 3. Reset Profile Form
+// ============================================
+// 2. RESET PROFILE FORM
+// ============================================
+
 function resetProfileForm() {
-    if (confirm('Discard your changes?')) {
-        document.getElementById('profileFullName').value = 'Pritam Kumar';
-        document.getElementById('profileUsername').value = 'pritamk';
-        document.getElementById('profileEmail').value = 'pritam@example.com';
-        document.getElementById('profilePhone').value = '';
-        document.getElementById('profileBio').value = 'Passionate about personal finance and helping others achieve financial freedom.';
+
+    if (confirm("Discard your changes?")) {
+
+        window.location.reload();
+
     }
 }
 
-// 4. Initialize Profile Page
+
+// ============================================
+// 3. INITIALIZE PROFILE PAGE
+// ============================================
+
 function initProfile() {
-    console.log('👤 Profile page initialized!');
-    
-    const profileForm = document.getElementById('profileForm');
-    if (profileForm) {
-        profileForm.addEventListener('submit', handleProfileUpdate);
+
+    console.log("👤 Profile page initialized!");
+
+    const profileForm =
+        document.getElementById("profileForm");
+
+    if (!profileForm) {
+        return;
     }
+
+    /*
+        IMPORTANT:
+
+        Do NOT add a submit event listener here.
+
+        The profile form is submitted normally to Flask:
+
+        POST /dashboard/profile
+
+        Flask then updates the MySQL database.
+    */
 }
+
 
 // ============================================
 // AUTO-INITIALIZE
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.profile-header')) {
+document.addEventListener("DOMContentLoaded", function() {
+
+    if (document.querySelector(".profile-header")) {
+
         initProfile();
+
     }
+
 });

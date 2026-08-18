@@ -31,136 +31,186 @@ const chartColors = {
 // 2. INCOME VS EXPENSES CHART (Line Chart)
 // ============================================
 
-function createIncomeExpenseChart(period = '6m') {
+// ============================================
+// INCOME VS EXPENSES CHART
+// ============================================
+
+function createIncomeExpenseChart() {
+
     const ctx = document.getElementById('incomeExpenseChart');
+
     if (!ctx) return;
-    
-    // Data for different periods
-    const dataMap = {
-        '6m': {
-            labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-            income: [25000, 32000, 28000, 35000, 30000, 38000],
-            expense: [12000, 15000, 10000, 14000, 13000, 16000]
-        },
-        '3m': {
-            labels: ['Jun', 'Jul', 'Aug'],
-            income: [35000, 30000, 38000],
-            expense: [14000, 13000, 16000]
-        },
-        '1y': {
-            labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-            income: [22000, 25000, 28000, 30000, 32000, 35000, 25000, 32000, 28000, 35000, 30000, 38000],
-            expense: [10000, 12000, 11000, 13000, 14000, 15000, 12000, 15000, 10000, 14000, 13000, 16000]
-        },
-        'all': {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            income: [20000, 22000, 25000, 28000, 30000, 32000, 35000, 38000, 25000, 32000, 28000, 35000],
-            expense: [9000, 10000, 12000, 11000, 13000, 14000, 15000, 16000, 12000, 15000, 10000, 14000]
-        }
-    };
-    
-    const data = dataMap[period] || dataMap['6m'];
-    
+
     if (incomeExpenseChart) {
         incomeExpenseChart.destroy();
     }
-    
+
+    // Get monthly data from Flask
+    const dataElement = document.getElementById('monthly-data');
+
+    const monthlyData = dataElement
+        ? JSON.parse(dataElement.textContent)
+        : [];
+
+    if (monthlyData.length === 0) {
+        console.log('ℹ️ No monthly income/expense data available.');
+        return;
+    }
+
+    // Month labels
+    const labels = monthlyData.map(item => {
+
+        const [year, month] = item.month.split('-');
+
+        const date = new Date(
+            Number(year),
+            Number(month) - 1
+        );
+
+        return date.toLocaleString('en-US', {
+            month: 'short'
+        });
+    });
+
+    // Income values
+    const incomeData = monthlyData.map(item =>
+        Number(item.income)
+    );
+
+    // Expense values
+    const expenseData = monthlyData.map(item =>
+        Number(item.expenses)
+    );
+
     incomeExpenseChart = new Chart(ctx, {
+
         type: 'line',
+
         data: {
-            labels: data.labels,
+
+            labels: labels,
+
             datasets: [
+
                 {
                     label: 'Income',
-                    data: data.income,
+
+                    data: incomeData,
+
                     borderColor: chartColors.income,
-                    backgroundColor: chartColors.income + '20',
-                    fill: true,
+
+                    backgroundColor: 'rgba(16, 185, 129, 0.10)',
+
+                    borderWidth: 3,
+
                     tension: 0.4,
-                    pointBackgroundColor: chartColors.income,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
+
+                    fill: false,
+
                     pointRadius: 4,
+
                     pointHoverRadius: 6
                 },
+
                 {
                     label: 'Expenses',
-                    data: data.expense,
+
+                    data: expenseData,
+
                     borderColor: chartColors.expense,
-                    backgroundColor: chartColors.expense + '20',
-                    fill: true,
+
+                    backgroundColor: 'rgba(239, 68, 68, 0.10)',
+
+                    borderWidth: 3,
+
                     tension: 0.4,
-                    pointBackgroundColor: chartColors.expense,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
+
+                    fill: false,
+
                     pointRadius: 4,
+
                     pointHoverRadius: 6
                 }
+
             ]
         },
+
         options: {
+
             responsive: true,
+
             maintainAspectRatio: false,
+
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+
             plugins: {
+
                 legend: {
                     position: 'top',
+
                     labels: {
                         usePointStyle: true,
-                        padding: 20,
+                        padding: 18,
                         font: {
                             size: 12,
                             family: "'Inter', sans-serif"
                         }
                     }
                 },
+
                 tooltip: {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    titleColor: '#2d3748',
-                    bodyColor: '#4a5568',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
+
                     callbacks: {
+
                         label: function(context) {
-                            return context.dataset.label + ': ₹' + context.raw.toLocaleString('en-IN');
+
+                            return (
+                                context.dataset.label +
+                                ': ₹' +
+                                Number(context.raw)
+                                    .toLocaleString('en-IN')
+                            );
+
                         }
+
                     }
+
                 }
+
             },
+
             scales: {
+
                 y: {
+
                     beginAtZero: true,
+
                     ticks: {
+
                         callback: function(value) {
-                            return '₹' + value.toLocaleString('en-IN');
-                        },
-                        font: {
-                            size: 11
+
+                            return '₹' +
+                                Number(value)
+                                    .toLocaleString('en-IN');
+
                         }
-                    },
-                    grid: {
-                        color: '#e2e8f0',
-                        drawBorder: false
+
                     }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 11
-                        }
-                    }
+
                 }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
+
             }
+
         }
+
     });
+
+    console.log(
+        '✅ Income vs Expenses chart created using database data!'
+    );
 }
 
 // ============================================
@@ -168,229 +218,553 @@ function createIncomeExpenseChart(period = '6m') {
 // ============================================
 
 function createSpendingBreakdownChart() {
+
     const ctx = document.getElementById('spendingBreakdownChart');
+
     if (!ctx) return;
-    
+
     if (spendingBreakdownChart) {
         spendingBreakdownChart.destroy();
     }
-    
+
+
+    // ============================================
+    // GET DATA FROM FLASK
+    // ============================================
+
+    const dataElement =
+        document.getElementById('category-spending-data');
+
+    const categoryData = dataElement
+        ? JSON.parse(dataElement.textContent)
+        : [];
+
+
+    if (categoryData.length === 0) {
+
+        console.log('ℹ️ No spending data available.');
+
+        return;
+    }
+
+
+    // ============================================
+    // CATEGORY NAMES
+    // ============================================
+
+    const labels = categoryData.map(item =>
+        item.category
+    );
+
+
+    // ============================================
+    // CATEGORY AMOUNTS
+    // ============================================
+
+    const amounts = categoryData.map(item =>
+        Number(item.total)
+    );
+
+
+    // ============================================
+    // CHART COLORS
+    // ============================================
+
+    const categoryColors = [
+
+        chartColors.housing,
+        chartColors.food,
+        chartColors.transport,
+        chartColors.shopping,
+        chartColors.entertainment,
+
+        '#9B59B6',
+        '#E67E22',
+        '#1ABC9C',
+        '#34495E',
+        '#F1C40F',
+        '#E74C3C',
+        '#3498DB'
+
+    ];
+
+
+    // Give every category a different color
+    const backgroundColors = categoryData.map(
+        (item, index) =>
+            categoryColors[index % categoryColors.length]
+    );
+
+
+    // ============================================
+    // CREATE DONUT CHART
+    // ============================================
+
     spendingBreakdownChart = new Chart(ctx, {
+
         type: 'doughnut',
+
         data: {
-            labels: ['Housing', 'Food', 'Transport', 'Shopping', 'Entertainment'],
+
+            labels: labels,
+
             datasets: [{
-                data: [21500, 14200, 8400, 7100, 4800],
-                backgroundColor: [
-                    chartColors.housing,
-                    chartColors.food,
-                    chartColors.transport,
-                    chartColors.shopping,
-                    chartColors.entertainment
-                ],
+
+                data: amounts,
+
+                backgroundColor: backgroundColors,
+
                 borderWidth: 2,
+
                 borderColor: '#ffffff'
+
             }]
+
         },
+
+
+        // ========================================
+        // CHART OPTIONS
+        // ========================================
+
         options: {
+
             responsive: true,
+
             maintainAspectRatio: false,
+
             cutout: '70%',
+
+
             plugins: {
+
+                // ==================================
+                // LEGEND
+                // ==================================
+
                 legend: {
+
                     position: 'bottom',
+
                     labels: {
+
                         usePointStyle: true,
+
                         padding: 16,
+
+                        font: {
+
+                            size: 12,
+
+                            family: "'Inter', sans-serif"
+
+                        }
+
+                    }
+
+                },
+
+
+                // ==================================
+                // TOOLTIP
+                // ==================================
+
+                tooltip: {
+
+                    backgroundColor:
+                        'rgba(255,255,255,0.95)',
+
+                    titleColor: '#2d3748',
+
+                    bodyColor: '#4a5568',
+
+                    borderColor: '#e2e8f0',
+
+                    borderWidth: 1,
+
+                    padding: 12,
+
+                    cornerRadius: 8,
+
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            const total =
+                                context.dataset.data.reduce(
+                                    (a, b) => a + b,
+                                    0
+                                );
+
+
+                            const percentage =
+                                (
+                                    (context.raw / total) * 100
+                                ).toFixed(1);
+
+
+                            return (
+
+                                context.label +
+
+                                ': ₹' +
+
+                                Number(context.raw)
+                                    .toLocaleString('en-IN') +
+
+                                ' (' +
+
+                                percentage +
+
+                                '%)'
+
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    console.log(
+        '✅ Spending Breakdown Chart created using database data!'
+    );
+
+}
+// ============================================
+// 4. INCOME SOURCES CHART (Bar Chart)
+// ============================================
+
+// ============================================
+// INCOME SOURCES CHART (Bar Chart)
+// ============================================
+
+function createIncomeSourcesChart() {
+
+    const ctx = document.getElementById('incomeSourcesChart');
+
+    if (!ctx) return;
+
+    if (incomeSourcesChart) {
+        incomeSourcesChart.destroy();
+    }
+
+    // Get income source data from Flask
+    const dataElement = document.getElementById('income-sources-data');
+
+    const incomeData = dataElement
+        ? JSON.parse(dataElement.textContent)
+        : [];
+
+    if (incomeData.length === 0) {
+        console.log('ℹ️ No income source data available.');
+        return;
+    }
+
+    // Category names
+    const labels = incomeData.map(item =>
+        item.category
+    );
+
+    // Income amounts
+    const amounts = incomeData.map(item =>
+        Number(item.total)
+    );
+
+    incomeSourcesChart = new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+                label: 'Income',
+
+                data: amounts,
+
+                backgroundColor: '#10B981',
+
+                borderRadius: 8,
+
+                borderSkipped: false,
+
+                barThickness: 32
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return (
+                                'Income: ₹' +
+                                Number(context.raw)
+                                    .toLocaleString('en-IN')
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: '#64748B',
+
                         font: {
                             size: 12,
                             family: "'Inter', sans-serif"
                         }
                     }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    titleColor: '#2d3748',
-                    bodyColor: '#4a5568',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((context.raw / total) * 100).toFixed(1);
-                            return context.label + ': ₹' + context.raw.toLocaleString('en-IN') + ' (' + percentage + '%)';
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
 
-// ============================================
-// 4. INCOME SOURCES CHART (Bar Chart)
-// ============================================
-
-function createIncomeSourcesChart() {
-    const ctx = document.getElementById('incomeSourcesChart');
-    if (!ctx) return;
-    
-    if (incomeSourcesChart) {
-        incomeSourcesChart.destroy();
-    }
-    
-    incomeSourcesChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Salary', 'Freelance', 'Investment', 'Gift', 'Other'],
-            datasets: [{
-                label: 'Income Sources',
-                data: [85000, 32000, 18000, 15000, 12000],
-                backgroundColor: [
-                    chartColors.salary,
-                    chartColors.freelance,
-                    chartColors.investment,
-                    chartColors.gift,
-                    chartColors.other
-                ],
-                borderRadius: 8,
-                barPercentage: 0.6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
                 },
-                tooltip: {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    titleColor: '#2d3748',
-                    bodyColor: '#4a5568',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            return '₹' + context.raw.toLocaleString('en-IN');
-                        }
-                    }
-                }
-            },
-            scales: {
+
                 y: {
+
                     beginAtZero: true,
+
+                    grid: {
+                        color: '#E2E8F0'
+                    },
+
                     ticks: {
+
+                        color: '#64748B',
+
                         callback: function(value) {
-                            return '₹' + value.toLocaleString('en-IN');
+
+                            return '₹' +
+                                Number(value)
+                                    .toLocaleString('en-IN');
+
                         },
+
                         font: {
-                            size: 10
-                        }
-                    },
-                    grid: {
-                        color: '#e2e8f0',
-                        drawBorder: false
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 10
+                            size: 11,
+                            family: "'Inter', sans-serif"
                         }
                     }
+
                 }
+
             }
+
         }
+
     });
+
+    console.log(
+        '✅ Income Sources bar chart created using database data!'
+    );
 }
 
 // ============================================
-// 5. MONTHLY SAVINGS CHART (Bar Chart)
+// MONTHLY SAVINGS CHART
 // ============================================
 
 function createMonthlySavingsChart() {
+
     const ctx = document.getElementById('monthlySavingsChart');
+
     if (!ctx) return;
-    
+
     if (monthlySavingsChart) {
         monthlySavingsChart.destroy();
     }
-    
+
+    // Get savings data from Flask
+    const dataElement = document.getElementById('monthly-savings-data');
+
+    const savingsData = dataElement
+        ? JSON.parse(dataElement.textContent)
+        : [];
+
+    if (savingsData.length === 0) {
+        console.log('ℹ️ No monthly savings data available.');
+        return;
+    }
+
+    // Month labels
+    const labels = savingsData.map(item => {
+
+        const [year, month] = item.month.split('-');
+
+        const date = new Date(
+            Number(year),
+            Number(month) - 1
+        );
+
+        return date.toLocaleString('en-US', {
+            month: 'short'
+        });
+    });
+
+    // Savings values
+    const amounts = savingsData.map(item =>
+        Number(item.savings)
+    );
+
     monthlySavingsChart = new Chart(ctx, {
-        type: 'bar',
+
+        type: 'line',
+
         data: {
-            labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+
+            labels: labels,
+
             datasets: [{
+
                 label: 'Savings',
-                data: [13000, 17000, 18000, 21000, 17000, 22000],
-                backgroundColor: chartColors.savings + '80',
-                borderColor: chartColors.savings,
-                borderWidth: 2,
-                borderRadius: 8,
-                barPercentage: 0.5
+
+                data: amounts,
+
+                borderColor: '#10B981',
+
+                backgroundColor: 'rgba(16, 185, 129, 0.10)',
+
+                borderWidth: 3,
+
+                tension: 0.4,
+
+                fill: true,
+
+                pointRadius: 4,
+
+                pointHoverRadius: 6
+
             }]
+
         },
+
         options: {
+
             responsive: true,
+
             maintainAspectRatio: false,
+
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+
             plugins: {
+
                 legend: {
                     display: false
                 },
+
                 tooltip: {
-                    backgroundColor: 'rgba(255,255,255,0.95)',
-                    titleColor: '#2d3748',
-                    bodyColor: '#4a5568',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
-                    padding: 12,
-                    cornerRadius: 8,
+
                     callbacks: {
+
                         label: function(context) {
-                            return '₹' + context.raw.toLocaleString('en-IN');
+
+                            return (
+                                'Savings: ₹' +
+                                Number(context.raw)
+                                    .toLocaleString('en-IN')
+                            );
+
                         }
+
                     }
+
                 }
+
             },
+
             scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '₹' + value.toLocaleString('en-IN');
-                        },
-                        font: {
-                            size: 10
-                        }
-                    },
-                    grid: {
-                        color: '#e2e8f0',
-                        drawBorder: false
-                    }
-                },
+
                 x: {
+
                     grid: {
                         display: false
                     },
+
                     ticks: {
+                        color: '#64748B',
+
                         font: {
-                            size: 10
+                            size: 12,
+                            family: "'Inter', sans-serif"
                         }
                     }
-                }
-            }
-        }
-    });
-}
 
+                },
+
+                y: {
+
+                    beginAtZero: false,
+
+                    grid: {
+                        color: '#E2E8F0'
+                    },
+
+                    ticks: {
+
+                        color: '#64748B',
+
+                        callback: function(value) {
+
+                            return '₹' +
+                                Number(value)
+                                    .toLocaleString('en-IN');
+
+                        },
+
+                        font: {
+                            size: 11,
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+    console.log(
+        '✅ Monthly Savings chart created using database data!'
+    );
+}
 // ============================================
 // 6. UPDATE CHARTS ON PERIOD CHANGE
 // ============================================

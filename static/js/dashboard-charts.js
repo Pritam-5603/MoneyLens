@@ -24,157 +24,638 @@ const chartColors = {
 // ============================================
 
 function createCashFlowChart() {
+
     console.log('📊 Creating Cash Flow Chart...');
-    
+
     const canvas = document.getElementById('cashFlowChart');
+
     if (!canvas) {
         console.error('❌ Cash flow chart canvas not found!');
         return;
     }
-    
+
     if (cashFlowChart) {
         cashFlowChart.destroy();
         cashFlowChart = null;
     }
 
     const ctx = canvas.getContext('2d');
-    
-    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
-    const incomeData = [28000, 32000, 35000, 30000, 38000, 42000, 45000, 49829];
-    const expenseData = [12000, 15000, 14000, 16000, 18000, 20000, 22000, 36868];
-    const netData = incomeData.map((inc, i) => inc - expenseData[i]);
+
+    // ============================================
+    // GET DATA FROM FLASK
+    // ============================================
+
+    const cashflowElement = document.getElementById('cashflow-data');
+
+    const data = cashflowElement
+        ? JSON.parse(cashflowElement.textContent)
+        : [];
+
+    if (data.length === 0) {
+        console.log('ℹ️ No cash flow data available.');
+        return;
+    }
+
+    // ============================================
+    // CREATE CHART LABELS
+    // ============================================
+
+    const labels = data.map(item => {
+
+        const [year, month] = item.month.split('-');
+
+        const date = new Date(year, month - 1);
+
+        return date.toLocaleString('en-US', {
+            month: 'short'
+        });
+
+    });
+
+    // ============================================
+    // GET INCOME VALUES
+    // ============================================
+
+    const incomeData = data.map(item =>
+        Number(item.income)
+    );
+
+    // ============================================
+    // GET EXPENSE VALUES
+    // ============================================
+
+    const expenseData = data.map(item =>
+        Number(item.expenses)
+    );
+
+    // ============================================
+    // CALCULATE NET FLOW
+    // ============================================
+
+    const netData = incomeData.map((income, index) =>
+        income - expenseData[index]
+    );
+
 
     try {
+
         cashFlowChart = new Chart(ctx, {
+
             type: 'line',
+
             data: {
+
                 labels: labels,
+
                 datasets: [
+
+                    // ============================================
+                    // INCOME
+                    // ============================================
+
                     {
                         label: 'Income',
+
                         data: incomeData,
+
                         borderColor: chartColors.income,
-                        backgroundColor: chartColors.income + '20',
+
+                        backgroundColor:
+                            chartColors.income + '20',
+
                         fill: true,
+
                         tension: 0.4,
+
                         pointRadius: 5,
-                        pointBackgroundColor: chartColors.income,
+
+                        pointBackgroundColor:
+                            chartColors.income,
+
                         pointBorderColor: '#fff',
+
                         pointBorderWidth: 2,
+
                         borderWidth: 3
                     },
+
+
+                    // ============================================
+                    // EXPENSES
+                    // ============================================
+
                     {
                         label: 'Expenses',
+
                         data: expenseData,
+
                         borderColor: chartColors.expense,
-                        backgroundColor: chartColors.expense + '20',
+
+                        backgroundColor:
+                            chartColors.expense + '20',
+
                         fill: true,
+
                         tension: 0.4,
+
                         pointRadius: 5,
-                        pointBackgroundColor: chartColors.expense,
+
+                        pointBackgroundColor:
+                            chartColors.expense,
+
                         pointBorderColor: '#fff',
+
                         pointBorderWidth: 2,
+
                         borderWidth: 3
                     },
+
+
+                    // ============================================
+                    // NET FLOW
+                    // ============================================
+
                     {
                         label: 'Net Flow',
+
                         data: netData,
+
                         borderColor: chartColors.net,
-                        backgroundColor: chartColors.net + '20',
+
+                        backgroundColor:
+                            chartColors.net + '20',
+
                         fill: true,
+
                         tension: 0.4,
+
                         pointRadius: 5,
-                        pointBackgroundColor: chartColors.net,
+
+                        pointBackgroundColor:
+                            chartColors.net,
+
                         pointBorderColor: '#fff',
+
                         pointBorderWidth: 2,
+
                         borderWidth: 2,
+
                         borderDash: [6, 4]
                     }
+
                 ]
+
             },
+
+
+            // ============================================
+            // CHART OPTIONS
+            // ============================================
+
             options: {
+
                 responsive: true,
+
                 maintainAspectRatio: false,
+
+
                 plugins: {
+
                     legend: {
+
                         position: 'top',
+
                         labels: {
+
                             usePointStyle: true,
+
                             padding: 20,
+
                             font: {
                                 size: 13,
                                 family: "'Inter', sans-serif",
                                 weight: '500'
                             },
+
                             boxWidth: 12,
+
                             boxHeight: 12
                         }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(255,255,255,0.95)',
-                        titleColor: '#2d3748',
-                        bodyColor: '#4a5568',
-                        borderColor: '#e2e8f0',
-                        borderWidth: 1,
-                        padding: 14,
-                        cornerRadius: 10,
-                        titleFont: { size: 14, weight: '600' },
-                        bodyFont: { size: 13 },
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ₹' + context.raw.toLocaleString('en-IN');
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '₹' + value.toLocaleString('en-IN');
-                            },
-                            font: { size: 12 }
-                        },
-                        grid: {
-                            color: 'rgba(0,0,0,0.06)',
-                            drawBorder: false
-                        }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { 
-                            font: { size: 12 },
-                            color: '#4a5568'
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                }
-            }
-        });
-        
-        console.log('✅ Cash Flow Chart created!');
-    } catch (error) {
-        console.error('❌ Cash flow chart error:', error);
-    }
-}
 
+                    },
+
+
+                    tooltip: {
+
+                        backgroundColor:
+                            'rgba(255,255,255,0.95)',
+
+                        titleColor: '#2d3748',
+
+                        bodyColor: '#4a5568',
+
+                        borderColor: '#e2e8f0',
+
+                        borderWidth: 1,
+
+                        padding: 14,
+
+                        cornerRadius: 10,
+
+                        titleFont: {
+                            size: 14,
+                            weight: '600'
+                        },
+
+                        bodyFont: {
+                            size: 13
+                        },
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return (
+                                    context.dataset.label +
+                                    ': ₹' +
+                                    Number(context.raw)
+                                        .toLocaleString('en-IN')
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+
+                // ============================================
+                // SCALES
+                // ============================================
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value) {
+
+                                return '₹' +
+                                    Number(value)
+                                        .toLocaleString('en-IN');
+
+                            },
+
+                            font: {
+                                size: 12
+                            }
+
+                        },
+
+                        grid: {
+
+                            color:
+                                'rgba(0,0,0,0.06)',
+
+                            drawBorder: false
+
+                        }
+
+                    },
+
+
+                    x: {
+
+                        grid: {
+                            display: false
+                        },
+
+                        ticks: {
+
+                            font: {
+                                size: 12
+                            },
+
+                            color: '#4a5568'
+
+                        }
+
+                    }
+
+                },
+
+
+                // ============================================
+                // INTERACTION
+                // ============================================
+
+                interaction: {
+
+                    intersect: false,
+
+                    mode: 'index'
+
+                }
+
+            }
+
+        });
+
+
+        console.log(
+            '✅ Cash Flow Chart created using database data!'
+        );
+
+    } catch (error) {
+
+        console.error(
+            '❌ Cash flow chart error:',
+            error
+        );
+
+    }
+
+}
+// ============================================
+// CASH FLOW PERIOD FILTER
+// ============================================
+
+const cashFlowPeriod = document.getElementById('cashFlowPeriod');
+
+if (cashFlowPeriod) {
+
+    cashFlowPeriod.addEventListener('change', function () {
+
+        const months = Number(this.value);
+
+        const cashflowElement =
+            document.getElementById('cashflow-data');
+
+        if (!cashflowElement) {
+            console.error('❌ Cash flow data not found!');
+            return;
+        }
+
+        const data =
+            JSON.parse(cashflowElement.textContent);
+
+        // Take the selected number of months
+        const filteredData =
+            data.slice(-months);
+
+        if (filteredData.length === 0) {
+            console.log('ℹ️ No data for selected period.');
+            return;
+        }
+
+        // Create labels
+        const labels = filteredData.map(item => {
+
+            const [year, month] =
+                item.month.split('-');
+
+            const date =
+                new Date(year, month - 1);
+
+            return date.toLocaleString('en-US', {
+                month: 'short'
+            });
+
+        });
+
+        // Income
+        const incomeData =
+            filteredData.map(item =>
+                Number(item.income)
+            );
+
+        // Expenses
+        const expenseData =
+            filteredData.map(item =>
+                Number(item.expenses)
+            );
+
+        // Net flow
+        const netData =
+            incomeData.map((income, index) =>
+                income - expenseData[index]
+            );
+
+
+        // Destroy old chart
+        if (cashFlowChart) {
+            cashFlowChart.destroy();
+        }
+
+
+        // Create new chart
+        const canvas =
+            document.getElementById('cashFlowChart');
+
+        const ctx =
+            canvas.getContext('2d');
+
+
+        cashFlowChart = new Chart(ctx, {
+
+            type: 'line',
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: 'Income',
+
+                        data: incomeData,
+
+                        borderColor:
+                            chartColors.income,
+
+                        backgroundColor:
+                            chartColors.income + '20',
+
+                        fill: true,
+
+                        tension: 0.4,
+
+                        pointRadius: 5,
+
+                        pointBackgroundColor:
+                            chartColors.income,
+
+                        pointBorderColor: '#fff',
+
+                        pointBorderWidth: 2,
+
+                        borderWidth: 3
+                    },
+
+
+                    {
+                        label: 'Expenses',
+
+                        data: expenseData,
+
+                        borderColor:
+                            chartColors.expense,
+
+                        backgroundColor:
+                            chartColors.expense + '20',
+
+                        fill: true,
+
+                        tension: 0.4,
+
+                        pointRadius: 5,
+
+                        pointBackgroundColor:
+                            chartColors.expense,
+
+                        pointBorderColor: '#fff',
+
+                        pointBorderWidth: 2,
+
+                        borderWidth: 3
+                    },
+
+
+                    {
+                        label: 'Net Flow',
+
+                        data: netData,
+
+                        borderColor:
+                            chartColors.net,
+
+                        backgroundColor:
+                            chartColors.net + '20',
+
+                        fill: true,
+
+                        tension: 0.4,
+
+                        pointRadius: 5,
+
+                        pointBackgroundColor:
+                            chartColors.net,
+
+                        pointBorderColor: '#fff',
+
+                        pointBorderWidth: 2,
+
+                        borderWidth: 2,
+
+                        borderDash: [6, 4]
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        position: 'top'
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return (
+                                    context.dataset.label +
+                                    ': ₹' +
+                                    Number(context.raw)
+                                        .toLocaleString('en-IN')
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value) {
+
+                                return '₹' +
+                                    Number(value)
+                                        .toLocaleString('en-IN');
+
+                            }
+
+                        }
+
+                    },
+
+                    x: {
+
+                        grid: {
+                            display: false
+                        }
+
+                    }
+
+                },
+
+                interaction: {
+
+                    intersect: false,
+
+                    mode: 'index'
+
+                }
+
+            }
+
+        });
+
+    });
+
+}
+// ============================================
+// SPENDING CHART
+// ============================================
 // ============================================
 // SPENDING CHART
 // ============================================
 
 function createSpendingChart() {
+
     console.log('📊 Creating Spending Chart...');
-    
+
     const canvas = document.getElementById('spendingChart');
+
     if (!canvas) {
         console.error('❌ Spending chart canvas not found!');
         return;
     }
-    
+
     if (spendingChart) {
         spendingChart.destroy();
         spendingChart = null;
@@ -182,70 +663,108 @@ function createSpendingChart() {
 
     const ctx = canvas.getContext('2d');
 
-    try {
-        spendingChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Housing', 'Food & Dining', 'Transport', 'Shopping', 'Other'],
-                datasets: [{
-                    data: [2100, 940, 520, 680, 410],  // ✅ CORRECT DATA
-                    backgroundColor: [
-                        chartColors.housing,
-                        chartColors.food,
-                        chartColors.transport,
-                        chartColors.shopping,
-                        chartColors.other
-                    ],
-                    borderWidth: 3,
-                    borderColor: '#ffffff',
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 16,
-                            font: {
-                                size: 13,
-                                family: "'Inter', sans-serif"
-                            },
-                            boxWidth: 12,
-                            boxHeight: 12
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(255,255,255,0.95)',
-                        titleColor: '#2d3748',
-                        bodyColor: '#4a5568',
-                        borderColor: '#e2e8f0',
-                        borderWidth: 1,
-                        padding: 14,
-                        cornerRadius: 10,
-                        titleFont: { size: 14, weight: '600' },
-                        bodyFont: { size: 13 },
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.raw / total) * 100).toFixed(1);
-                                return context.label + ': ₹' + context.raw + ' (' + percentage + '%)';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
-        console.log('✅ Spending Chart created!');
-        console.log('📊 Spending data:', [2100, 940, 520, 680, 410]);
-    } catch (error) {
-        console.error('❌ Spending chart error:', error);
+    // Get spending data from Flask
+    const spendingElement = document.getElementById('spending-data');
+
+    const data = spendingElement
+    ? JSON.parse(spendingElement.textContent)
+    : [];
+
+    if (data.length === 0) {
+        console.log('ℹ️ No spending data available.');
+        return;
     }
+
+    // Category names
+    const labels = data.map(item => item.category);
+
+    // Category amounts
+    const values = data.map(item => Number(item.total));
+
+    try {
+
+        spendingChart = new Chart(ctx, {
+
+            type: 'doughnut',
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+                    {
+                        data: values,
+
+                        backgroundColor: [
+                            '#6366F1',
+                            '#22C55E',
+                            '#F59E0B',
+                            '#EF4444',
+                            '#06B6D4',
+                            '#8B5CF6',
+                            '#EC4899',
+                            '#14B8A6'
+                        ],
+
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: '65%',
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return (
+                                    context.label +
+                                    ': ₹' +
+                                    Number(context.raw)
+                                        .toLocaleString('en-IN')
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+        console.log(
+            '✅ Spending Chart created using database data!'
+        );
+
+    } catch (error) {
+
+        console.error(
+            '❌ Spending chart error:',
+            error
+        );
+
+    }
+
 }
 
 // ============================================

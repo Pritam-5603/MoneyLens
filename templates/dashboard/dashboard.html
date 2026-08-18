@@ -26,7 +26,7 @@
                 <i class="fas fa-arrow-up"></i>
             </div>
         </div>
-        <div class="finance-value">₹65,000</div>
+        <div class="finance-value">₹{{ total_income }}</div>
         <div class="finance-bottom">
             <span class="trend positive">
                 <i class="fas fa-arrow-up"></i> 8.2%
@@ -43,7 +43,7 @@
                 <i class="fas fa-arrow-down"></i>
             </div>
         </div>
-        <div class="finance-value">₹16,000</div>
+        <div class="finance-value">₹{{ total_expenses }}</div>
         <div class="finance-bottom">
             <span class="trend negative">
                 <i class="fas fa-arrow-down"></i> 3.4%
@@ -60,7 +60,7 @@
                 <i class="fas fa-piggy-bank"></i>
             </div>
         </div>
-        <div class="finance-value">₹48,000</div>
+        <div class="finance-value">₹{{ total_savings }}</div>
         <div class="finance-bottom">
             <span class="trend positive">
                 <i class="fas fa-arrow-up"></i> 14.1%
@@ -84,10 +84,10 @@
                 <p>Income vs expenses over time</p>
             </div>
             <select class="chart-period">
-                <option>6M</option>
-                <option>3M</option>
-                <option>1M</option>
-                <option>1Y</option>
+                <option value="6">6M</option>
+                <option value="3">3M</option>
+                <option value="1">1M</option>
+                <option value="12">1Y</option>
             </select>
         </div>
 
@@ -98,21 +98,21 @@
                     <i class="fas fa-circle income-dot"></i>
                     Income
                 </span>
-                <strong>₹49,829</strong>
+                <strong>₹{{ total_income }}</strong>
             </div>
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle expense-dot"></i>
                     Expenses
                 </span>
-                <strong>₹36,868</strong>
+                <strong>₹{{ total_expenses }}</strong>
             </div>
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle net-dot"></i>
                     Net Flow
                 </span>
-                <strong class="net-positive">₹12,961</strong>
+                <strong class="net-positive">{{ total_savings }}</strong>
             </div>
         </div>
 
@@ -135,48 +135,29 @@
         <div class="spending-chart-container">
             <canvas id="spendingChart"></canvas>
             <div class="spending-total">
-                <strong>₹4.7k</strong>
+                <strong>₹{{ total_expenses }}</strong>
                 <span>Total spent</span>
             </div>
         </div>
 
         <!-- Spending Categories -->
         <div class="spending-categories">
-            <div class="spending-category">
-                <span>
-                    <i class="fas fa-circle category-housing"></i>
-                    Housing
-                </span>
-                <strong>₹2,100</strong>
-            </div>
-            <div class="spending-category">
-                <span>
-                    <i class="fas fa-circle category-food"></i>
-                    Food & Dining
-                </span>
-                <strong>₹940</strong>
-            </div>
-            <div class="spending-category">
-                <span>
-                    <i class="fas fa-circle category-transport"></i>
-                    Transport
-                </span>
-                <strong>₹520</strong>
-            </div>
-            <div class="spending-category">
-                <span>
-                    <i class="fas fa-circle category-shopping"></i>
-                    Shopping
-                </span>
-                <strong>₹680</strong>
-            </div>
-            <div class="spending-category">
-                <span>
-                    <i class="fas fa-circle category-other"></i>
-                    Other
-                </span>
-                <strong>₹410</strong>
-            </div>
+
+        {% for item in category_spending %}
+
+        <div class="spending-category">
+
+        <span>
+            <i class="fas fa-circle"></i>
+            {{ item.category }}
+        </span>
+
+        <strong>₹{{ item.total }}</strong>
+
+        </div>
+
+        {% endfor %}
+
         </div>
     </div>
 
@@ -200,69 +181,53 @@
             </a>
         </div>
 
-        <div class="recent-transactions" id="dashboardTransactionList">
+        {% for transaction in recent_transactions %}
 
-            <!-- Transaction 1 -->
-            <div class="recent-transaction" data-category="shopping">
-                <div class="recent-icon expense">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div class="recent-details">
-                    <strong>Grocery Shopping</strong>
-                    <span>Today, 2:30 PM</span>
-                </div>
-                <strong class="recent-amount negative">-₹450</strong>
-            </div>
+        <div class="recent-transaction">
 
-            <!-- Transaction 2 -->
-            <div class="recent-transaction" data-category="salary">
-                <div class="recent-icon income">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="recent-details">
-                    <strong>Salary Credit</strong>
-                    <span>Yesterday, 10:00 AM</span>
-                </div>
-                <strong class="recent-amount positive">+₹25,000</strong>
-            </div>
+        <div class="recent-icon {{ transaction.type }}">
 
-            <!-- Transaction 3 -->
-            <div class="recent-transaction" data-category="food">
-                <div class="recent-icon expense">
-                    <i class="fas fa-utensils"></i>
-                </div>
-                <div class="recent-details">
-                    <strong>Dinner at Restaurant</strong>
-                    <span>Aug 5, 8:00 PM</span>
-                </div>
-                <strong class="recent-amount negative">-₹1,200</strong>
-            </div>
-
-            <!-- Transaction 4 -->
-            <div class="recent-transaction" data-category="bills">
-                <div class="recent-icon expense">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="recent-details">
-                    <strong>Electricity Bill</strong>
-                    <span>Aug 3, 4:15 PM</span>
-                </div>
-                <strong class="recent-amount negative">-₹2,800</strong>
-            </div>
-
-            <!-- Transaction 5 -->
-            <div class="recent-transaction" data-category="income">
-                <div class="recent-icon income">
-                    <i class="fas fa-hand-holding-usd"></i>
-                </div>
-                <div class="recent-details">
-                    <strong>Freelance Payment</strong>
-                    <span>Aug 1, 11:20 AM</span>
-                </div>
-                <strong class="recent-amount positive">+₹12,000</strong>
-            </div>
+        {% if transaction.type == "income" %}
+            <i class="fas fa-arrow-up"></i>
+        {% else %}
+            <i class="fas fa-arrow-down"></i>
+        {% endif %}
 
         </div>
+
+
+        <div class="recent-details">
+
+        <strong>
+            {{ transaction.description }}
+        </strong>
+
+        <span>
+            {{ transaction.transaction_date }}
+        </span>
+
+        </div>
+
+
+        <strong class="recent-amount
+        {% if transaction.type == 'income' %}
+            positive
+        {% else %}
+            negative
+        {% endif %}
+        ">
+
+        {% if transaction.type == "income" %}
+            +₹{{ transaction.amount }}
+        {% else %}
+            -₹{{ transaction.amount }}
+        {% endif %}
+
+        </strong>
+
+        </div>
+
+        {% endfor %}
     </div>
 
     <!-- AI Insights -->
@@ -300,6 +265,12 @@
 <!-- ============================================
      SCRIPTS
 ============================================ -->
+<script id="cashflow-data" type="application/json">
+    {{ cashflow_data | tojson }}
+</script>
+<script id="spending-data" type="application/json">
+    {{ spending_data | tojson }}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard-charts.js') }}"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>

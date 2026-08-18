@@ -4,37 +4,54 @@
 
 <!-- ==========================================
      PAGE HEADER
-     Purpose: Title + Add Transaction button
 ========================================== -->
 <div class="page-header">
+
     <div class="header-left">
         <h1 class="page-title">Transactions</h1>
-        <p class="page-subtitle">Manage all your income and expenses</p>
+        <p class="page-subtitle">
+            Manage all your income and expenses
+        </p>
     </div>
+
     <button class="btn-primary" id="openModalBtn">
-        <i class="fas fa-plus-circle"></i> Add Transaction
+        <i class="fas fa-plus-circle"></i>
+        Add Transaction
     </button>
+
 </div>
+
 
 <!-- ==========================================
      FILTER BAR
-     Purpose: Search + Category + Date filters
 ========================================== -->
 <div class="filter-bar">
+
     <div class="filter-group">
+
         <i class="fas fa-search filter-icon"></i>
-        <input 
-            type="text" 
-            id="searchInput" 
-            class="filter-input" 
+
+        <input
+            type="text"
+            id="searchInput"
+            class="filter-input"
             placeholder="Search transactions..."
             onkeyup="filterTransactions()"
         >
+
     </div>
-    
+
+
     <div class="filter-group">
-        <select id="categoryFilter" class="filter-select" onchange="filterTransactions()">
+
+        <select
+            id="categoryFilter"
+            class="filter-select"
+            onchange="filterTransactions()"
+        >
+
             <option value="">All Categories</option>
+
             <option value="food">🍔 Food</option>
             <option value="transport">🚗 Transport</option>
             <option value="shopping">🛍️ Shopping</option>
@@ -44,327 +61,838 @@
             <option value="education">📚 Education</option>
             <option value="rent">🏠 Rent</option>
             <option value="travel">✈️ Travel</option>
+
             <option value="salary">💼 Salary</option>
             <option value="freelance">💻 Freelance</option>
             <option value="investment">📈 Investment</option>
             <option value="gift">🎁 Gift</option>
             <option value="refund">🔄 Refund</option>
+
             <option value="other">📌 Other</option>
+
         </select>
+
     </div>
-    
+
+
     <div class="filter-group">
-        <select id="dateFilter" class="filter-select" onchange="filterTransactions()">
+
+        <select
+            id="dateFilter"
+            class="filter-select"
+            onchange="filterTransactions()"
+        >
+
             <option value="all">All Time</option>
             <option value="today">Today</option>
             <option value="week">This Week</option>
             <option value="month">This Month</option>
             <option value="custom">Custom Range</option>
+
         </select>
+
     </div>
-    
-    <div class="filter-group date-range" id="dateRange" style="display:none;">
-        <input type="date" id="startDate" class="filter-input" onchange="filterTransactions()">
+
+
+    <div
+        class="filter-group date-range"
+        id="dateRange"
+        style="display:none;"
+    >
+
+        <input
+            type="date"
+            id="startDate"
+            class="filter-input"
+            onchange="filterTransactions()"
+        >
+
         <span class="date-separator">to</span>
-        <input type="date" id="endDate" class="filter-input" onchange="filterTransactions()">
+
+        <input
+            type="date"
+            id="endDate"
+            class="filter-input"
+            onchange="filterTransactions()"
+        >
+
     </div>
-    
-    <button class="btn-secondary" onclick="applyFilters()">
-        <i class="fas fa-sliders-h"></i> Apply Filters
+
+
+    <button
+        class="btn-secondary"
+        onclick="applyFilters()"
+    >
+
+        <i class="fas fa-sliders-h"></i>
+        Apply Filters
+
     </button>
-    <button class="btn-link" onclick="clearFilters()">
+
+
+    <button
+        class="btn-link"
+        onclick="clearFilters()"
+    >
+
         Clear
+
     </button>
+
 </div>
+
 
 <!-- ==========================================
      TRANSACTION STATS
-     Purpose: Income/Expense/Net summary
+     
+     TEMPORARY:
+     These will be connected to MySQL later.
 ========================================== -->
 <div class="transaction-stats">
+
     <div class="stat-card income-card">
+
         <div class="stat-header">
+
             <i class="fas fa-arrow-up stat-icon"></i>
-            <span class="stat-label">Total Income</span>
+
+            <span class="stat-label">
+                Total Income
+            </span>
+
         </div>
-        <span class="stat-value" id="totalIncome">₹65</span>
-        <span class="stat-trend positive">
-            <i class="fas fa-arrow-up"></i> 12% from last month
+
+        <span class="stat-value" id="totalIncome">
+            ₹{{ total_income }}
         </span>
+
+        <span class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            12% from last month
+        </span>
+
     </div>
-    
+
+
     <div class="stat-card expense-card">
+
         <div class="stat-header">
+
             <i class="fas fa-arrow-down stat-icon"></i>
-            <span class="stat-label">Total Expenses</span>
+
+            <span class="stat-label">
+                Total Expenses
+            </span>
+
         </div>
-        <span class="stat-value" id="totalExpenses">₹16</span>
+
+        <span class="stat-value" id="totalExpenses">
+            ₹{{ total_expenses }}
+        </span>
+
         <span class="stat-trend negative">
-            <i class="fas fa-arrow-up"></i> 8% from last month
+            <i class="fas fa-arrow-up"></i>
+            8% from last month
         </span>
+
     </div>
-    
+
+
     <div class="stat-card net-card">
+
         <div class="stat-header">
+
             <i class="fas fa-wallet stat-icon"></i>
-            <span class="stat-label">Net Balance</span>
+
+            <span class="stat-label">
+                Net Balance
+            </span>
+
         </div>
-        <span class="stat-value" id="netBalance">₹49</span>
-        <span class="stat-trend positive">
-            <i class="fas fa-arrow-up"></i> 15% from last month
+
+        <span class="stat-value" id="netBalance">
+            ₹{{ net_balance }}
         </span>
+
+        <span class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            15% from last month
+        </span>
+
     </div>
+
 </div>
+
 
 <!-- ==========================================
      TRANSACTION LIST
-     Purpose: All transactions with pagination
 ========================================== -->
 <div class="transaction-list-container">
+
+
+    <!-- List Header -->
     <div class="transaction-list-header">
-        <span class="list-count">Showing 5 of 25 transactions</span>
+
+        <span class="list-count">
+
+            Showing {{ transactions|length }} transactions
+
+        </span>
+
+
         <div class="list-actions">
-            <button class="btn-icon" title="Export CSV">
-                <i class="fas fa-file-export"></i>
+
+            <button
+                class="btn-icon"
+                id="historyBtn"
+                title="Transaction History"
+                onclick="openHistoryModal()"
+            >
+
+                <i class="fas fa-history"></i>
+
             </button>
-            <button class="btn-icon" title="Refresh">
+
+
+            <button
+                class="btn-icon"
+                title="Refresh"
+                onclick="location.reload()"
+            >
+
                 <i class="fas fa-sync"></i>
+
             </button>
+
         </div>
+
     </div>
-    
-    <!-- Card-based transaction list -->
-    <div class="transaction-list" id="transactionList">
-        <!-- Sample Transaction 1 - Income -->
-        <div class="transaction-item" data-category="salary" data-date="2026-08-07">
-            <div class="transaction-icon income">
-                <i class="fas fa-wallet"></i>
+
+
+    <!-- ==========================================
+         DATABASE TRANSACTION LIST
+    =========================================== -->
+    <div
+        class="transaction-list"
+        id="transactionList"
+    >
+
+        {% for transaction in transactions %}
+
+
+        <div
+            class="transaction-item"
+            data-category="{{ transaction.category }}"
+            data-date="{{ transaction.transaction_date }}"
+        >
+
+
+            <!-- Transaction Icon -->
+            <div class="transaction-icon {{ transaction.type }}">
+
+                {% if transaction.type == "income" %}
+
+                    <i class="fas fa-arrow-up"></i>
+
+                {% else %}
+
+                    <i class="fas fa-arrow-down"></i>
+
+                {% endif %}
+
             </div>
+
+
+            <!-- Transaction Details -->
             <div class="transaction-details">
-                <span class="transaction-name">Salary Credit</span>
-                <span class="transaction-date">Today, 10:00 AM</span>
-                <span class="transaction-category">💼 Salary</span>
+
+                <span class="transaction-name">
+
+                    {{ transaction.description }}
+
+                </span>
+
+
+                <span class="transaction-date">
+
+                    {{ transaction.transaction_date }}
+
+                </span>
+
+
+                <span class="transaction-category">
+
+                    {{ transaction.category }}
+
+                </span>
+
             </div>
-            <div class="transaction-amount positive">
-                +₹25,000
+
+
+            <!-- Amount -->
+            <div
+                class="transaction-amount
+                {% if transaction.type == 'income' %}
+                    positive
+                {% else %}
+                    negative
+                {% endif %}"
+            >
+
+                {% if transaction.type == "income" %}
+
+                    +₹{{ transaction.amount }}
+
+                {% else %}
+
+                    -₹{{ transaction.amount }}
+
+                {% endif %}
+
             </div>
+
+
+            <!-- Actions -->
             <div class="transaction-actions">
-                <button class="action-btn edit-btn" onclick="editTransaction(1)">
-                    <i class="fas fa-edit"></i>
+
+
+                <button
+                type="button"
+                class="action-btn edit-btn"
+                data-id="{{ transaction['id'] }}"
+                onclick="editTransaction(this.dataset.id)"
+                title="Edit transaction">
+
+                <i class="fas fa-edit"></i>
                 </button>
-                <button class="action-btn delete-btn" onclick="deleteTransaction(1)">
-                    <i class="fas fa-trash"></i>
+                <form
+                method="POST"
+                action="/dashboard/transactions/delete/{{ transaction['id'] }}"
+                style="display: inline;">
+                <button
+                type="submit"
+                class="action-btn delete-btn"
+                title="Delete transaction">
+                <i class="fas fa-trash"></i>
                 </button>
+                </form>
+
+
             </div>
+
+
         </div>
-        
-        <!-- Sample Transaction 2 - Expense -->
-        <div class="transaction-item" data-category="food" data-date="2026-08-07">
-            <div class="transaction-icon expense">
-                <i class="fas fa-utensils"></i>
-            </div>
-            <div class="transaction-details">
-                <span class="transaction-name">Dinner at Restaurant</span>
-                <span class="transaction-date">Today, 8:00 PM</span>
-                <span class="transaction-category">🍔 Food</span>
-            </div>
-            <div class="transaction-amount negative">
-                -₹1,200
-            </div>
-            <div class="transaction-actions">
-                <button class="action-btn edit-btn" onclick="editTransaction(2)">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteTransaction(2)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Sample Transaction 3 - Expense -->
-        <div class="transaction-item" data-category="shopping" data-date="2026-08-06">
-            <div class="transaction-icon expense">
-                <i class="fas fa-shopping-bag"></i>
-            </div>
-            <div class="transaction-details">
-                <span class="transaction-name">Grocery Shopping</span>
-                <span class="transaction-date">Yesterday, 2:30 PM</span>
-                <span class="transaction-category">🛍️ Shopping</span>
-            </div>
-            <div class="transaction-amount negative">
-                -₹450
-            </div>
-            <div class="transaction-actions">
-                <button class="action-btn edit-btn" onclick="editTransaction(3)">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteTransaction(3)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Sample Transaction 4 - Expense -->
-        <div class="transaction-item" data-category="bills" data-date="2026-08-05">
-            <div class="transaction-icon expense">
-                <i class="fas fa-bolt"></i>
-            </div>
-            <div class="transaction-details">
-                <span class="transaction-name">Electricity Bill</span>
-                <span class="transaction-date">Aug 5, 4:15 PM</span>
-                <span class="transaction-category">📄 Bills</span>
-            </div>
-            <div class="transaction-amount negative">
-                -₹2,800
-            </div>
-            <div class="transaction-actions">
-                <button class="action-btn edit-btn" onclick="editTransaction(4)">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteTransaction(4)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Sample Transaction 5 - Income -->
-        <div class="transaction-item" data-category="freelance" data-date="2026-08-04">
-            <div class="transaction-icon income">
-                <i class="fas fa-hand-holding-usd"></i>
-            </div>
-            <div class="transaction-details">
-                <span class="transaction-name">Freelance Payment</span>
-                <span class="transaction-date">Aug 4, 11:20 AM</span>
-                <span class="transaction-category">💻 Freelance</span>
-            </div>
-            <div class="transaction-amount positive">
-                +₹12,000
-            </div>
-            <div class="transaction-actions">
-                <button class="action-btn edit-btn" onclick="editTransaction(5)">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteTransaction(5)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
+
+
+        {% endfor %}
+
     </div>
-    
+
+
     <!-- ==========================================
          EMPTY STATE
-         Purpose: Shown when no transactions exist
-    ========================================== -->
-    <div class="empty-state" id="emptyState" style="display:none;">
+    =========================================== -->
+    {% if transactions|length == 0 %}
+
+    <div
+        class="empty-state"
+        id="emptyState"
+    >
+
         <div class="empty-content">
+
             <i class="fas fa-inbox empty-icon"></i>
+
             <h3>No transactions yet</h3>
-            <p>Start tracking your finances by adding your first transaction!</p>
-            <button class="btn-primary" onclick="openModal()">
-                <i class="fas fa-plus-circle"></i> Add Transaction
+
+            <p>
+                Start tracking your finances by adding your first transaction!
+            </p>
+
+            <button
+                class="btn-primary"
+                onclick="openModal()"
+            >
+
+                <i class="fas fa-plus-circle"></i>
+
+                Add Transaction
+
             </button>
+
         </div>
+
     </div>
+
+    {% endif %}
+
+
 </div>
 
-<!-- ==========================================
-     PAGINATION
-     Purpose: Page navigation
-========================================== -->
-<div class="pagination-container">
-    <div class="pagination">
-        <button class="page-link" onclick="changePage('prev')">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="page-link active">1</button>
-        <button class="page-link" onclick="changePage(2)">2</button>
-        <button class="page-link" onclick="changePage(3)">3</button>
-        <button class="page-link" onclick="changePage(4)">4</button>
-        <button class="page-link" onclick="changePage(5)">5</button>
-        <button class="page-link" onclick="changePage('next')">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
-    <span class="pagination-info">Page 1 of 5</span>
-</div>
 
 <!-- ==========================================
      ADD TRANSACTION MODAL
-     Purpose: Popup form for adding transactions
 ========================================== -->
-<div class="modal" id="addTransactionModal">
+<div
+    class="modal"
+    id="addTransactionModal"
+>
+
+
     <div class="modal-content">
+
+
+        <!-- Modal Header -->
         <div class="modal-header">
-            <h2><i class="fas fa-plus-circle"></i> Add Transaction</h2>
-            <span class="close-modal" id="closeModalBtn">&times;</span>
+
+            <h2>
+
+                <i class="fas fa-plus-circle"></i>
+
+                Add Transaction
+
+            </h2>
+
+
+            <span
+                class="close-modal"
+                id="closeModalBtn"
+            >
+
+                &times;
+
+            </span>
+
         </div>
-        
+
+
+        <!-- Modal Body -->
         <div class="modal-body">
-            <form id="addTransactionForm" method="POST" action="{{ url_for('transactions') }}">
+
+
+            <form
+                id="addTransactionForm"
+                method="POST"
+                action="{{ url_for('transactions') }}"
+            >
+
+
                 <!-- Transaction Type -->
                 <div class="form-group">
-                    <label for="transactionType">Type</label>
-                    <select id="transactionType" name="transaction_type" class="form-control" required onchange="updateCategories()">
-                        <option value="income">💰 Income</option>
-                        <option value="expense">💳 Expense</option>
+
+                    <label for="transactionType">
+                        Type
+                    </label>
+
+                    <select
+                        id="transactionType"
+                        name="transaction_type"
+                        class="form-control"
+                        required
+                        onchange="updateCategories()"
+                    >
+
+                        <option value="income">
+                            💰 Income
+                        </option>
+
+                        <option value="expense">
+                            💳 Expense
+                        </option>
+
                     </select>
+
                 </div>
-                
-                <!-- Amount & Date Row -->
+
+
+                <!-- Amount & Date -->
                 <div class="form-row">
+
+
                     <div class="form-group half">
-                        <label for="amount">Amount (₹)</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            id="amount" 
+
+                        <label for="amount">
+                            Amount (₹)
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            id="amount"
                             name="amount"
-                            class="form-control" 
-                            placeholder="0.00" 
+                            class="form-control"
+                            placeholder="0.00"
                             required
                         >
+
                     </div>
+
+
                     <div class="form-group half">
-                        <label for="date">Date</label>
-                        <input 
-                            type="date" 
-                            id="date" 
+
+                        <label for="date">
+                            Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date"
                             name="date"
-                            class="form-control" 
-                            value="{{ current_date }}"
+                            class="form-control"
                             required
                         >
+
                     </div>
+
                 </div>
-                
+
+
                 <!-- Description -->
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input 
-                        type="text" 
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
                         id="description"
-                        name="description" 
-                        class="form-control" 
-                        placeholder="What was this for?" 
+                        name="description"
+                        class="form-control"
+                        placeholder="What was this for?"
                         required
                     >
+
                 </div>
-                
+
+
                 <!-- Category -->
                 <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" name="category" class="form-control" required>
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                        class="form-control"
+                        required
+                    >
+
+
                         <!-- Income Categories -->
-                        <optgroup label="Income" id="incomeCategories">
+                        <optgroup
+                            label="Income"
+                            id="incomeCategories"
+                        >
+
+                            <option value="salary">
+                                💼 Salary
+                            </option>
+
+                            <option value="freelance">
+                                💻 Freelance
+                            </option>
+
+                            <option value="investment">
+                                📈 Investment
+                            </option>
+
+                            <option value="gift">
+                                🎁 Gift
+                            </option>
+
+                            <option value="refund">
+                                🔄 Refund
+                            </option>
+
+                            <option value="other">
+                                📌 Other
+                            </option>
+
+                        </optgroup>
+
+
+                        <!-- Expense Categories -->
+                        <optgroup
+                            label="Expense"
+                            id="expenseCategories"
+                        >
+
+                            <option value="food">
+                                🍔 Food
+                            </option>
+
+                            <option value="transport">
+                                🚗 Transport
+                            </option>
+
+                            <option value="shopping">
+                                🛍️ Shopping
+                            </option>
+
+                            <option value="bills">
+                                📄 Bills
+                            </option>
+
+                            <option value="entertainment">
+                                🎬 Entertainment
+                            </option>
+
+                            <option value="healthcare">
+                                🏥 Healthcare
+                            </option>
+
+                            <option value="education">
+                                📚 Education
+                            </option>
+
+                            <option value="rent">
+                                🏠 Rent
+                            </option>
+
+                            <option value="travel">
+                                ✈️ Travel
+                            </option>
+
+                            <option value="other">
+                                📌 Other
+                            </option>
+
+                        </optgroup>
+
+
+                    </select>
+
+                </div>
+
+
+                <!-- Note -->
+                <!--
+                    NOTE:
+                    Your current MySQL transactions table does NOT
+                    have a note column, so this value is not stored yet.
+                -->
+                <div class="form-group">
+
+                    <label for="note">
+                        Note (Optional)
+                    </label>
+
+                    <textarea
+                        id="note"
+                        name="note"
+                        class="form-control"
+                        rows="2"
+                        placeholder="Additional details..."
+                    ></textarea>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelBtn"
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="submit"
+                form="addTransactionForm"
+                class="btn-primary"
+                onclick="openhistorymodel()"
+            >
+
+                <i class="fas fa-save"></i>
+
+                Save Transaction
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<!-- ==========================================
+     EDIT TRANSACTION MODAL
+========================================== -->
+
+<div class="modal" id="editTransactionModal">
+
+    <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+
+            <h2>
+                <i class="fas fa-edit"></i>
+                Edit Transaction
+            </h2>
+
+            <span
+                class="close-modal"
+                id="closeEditModalBtn"
+            >
+                &times;
+            </span>
+
+        </div>
+
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+
+            <form
+                id="editTransactionForm"
+                method="POST"
+            >
+
+                <!-- Transaction Type -->
+                <div class="form-group">
+
+                    <label for="editTransactionType">
+                        Type
+                    </label>
+
+                    <select
+                        id="editTransactionType"
+                        name="transaction_type"
+                        class="form-control"
+                        required
+                        onchange="updateEditCategories()"
+                    >
+
+                        <option value="income">
+                            💰 Income
+                        </option>
+
+                        <option value="expense">
+                            💳 Expense
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Amount & Date -->
+                <div class="form-row">
+
+                    <div class="form-group half">
+
+                        <label for="editAmount">
+                            Amount (₹)
+                        </label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            id="editAmount"
+                            name="amount"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group half">
+
+                        <label for="editDate">
+                            Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="editDate"
+                            name="date"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- Description -->
+                <div class="form-group">
+
+                    <label for="editDescription">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editDescription"
+                        name="description"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Category -->
+                <div class="form-group">
+
+                    <label for="editCategory">
+                        Category
+                    </label>
+
+                    <select
+                        id="editCategory"
+                        name="category"
+                        class="form-control"
+                        required
+                    >
+
+                        <!-- Income -->
+                        <optgroup
+                            label="Income"
+                            id="editIncomeCategories"
+                        >
+
                             <option value="salary">💼 Salary</option>
                             <option value="freelance">💻 Freelance</option>
                             <option value="investment">📈 Investment</option>
                             <option value="gift">🎁 Gift</option>
                             <option value="refund">🔄 Refund</option>
                             <option value="other">📌 Other</option>
+
                         </optgroup>
-                        <!-- Expense Categories -->
-                        <optgroup label="Expense" id="expenseCategories">
+
+
+                        <!-- Expense -->
+                        <optgroup
+                            label="Expense"
+                            id="editExpenseCategories"
+                        >
+
                             <option value="food">🍔 Food</option>
                             <option value="transport">🚗 Transport</option>
                             <option value="shopping">🛍️ Shopping</option>
@@ -375,35 +903,162 @@
                             <option value="rent">🏠 Rent</option>
                             <option value="travel">✈️ Travel</option>
                             <option value="other">📌 Other</option>
+
                         </optgroup>
+
                     </select>
+
                 </div>
-                
-                <!-- Note (Optional) -->
-                <div class="form-group">
-                    <label for="note">Note (Optional)</label>
-                    <textarea 
-                        id="note" 
-                        name="note"
-                        class="form-control" 
-                        rows="2" 
-                        placeholder="Additional details..."
-                    ></textarea>
-                </div>
+
             </form>
+
         </div>
-        
+
+
+        <!-- Modal Footer -->
         <div class="modal-footer">
-            <button type="button" class="btn-secondary" id="cancelBtn">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelEditBtn"
+            >
                 Cancel
             </button>
-            <button type="submit" form="addTransactionForm" class="btn-primary">
-                <i class="fas fa-save"></i> Save Transaction
-            </button>
-        </div>
-    </div>
-</div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+            <button
+                type="submit"
+                form="editTransactionForm"
+                class="btn-primary"
+            >
+
+                <i class="fas fa-save"></i>
+                Save Changes
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ==========================================
+     TRANSACTION HISTORY MODAL
+========================================== -->
+
+<div class="modal" id="historyModal">
+
+    <div class="modal-content history-modal-content">
+
+        <!-- Header -->
+        <div class="modal-header">
+
+            <div>
+                <h2>
+                    <i class="fas fa-history"></i>
+                    Transaction History
+                </h2>
+
+                <p>
+                    Complete history of your transactions
+                </p>
+            </div>
+
+            <span
+                class="close-modal"
+                onclick="closeHistoryModal()"
+            >
+                &times;
+            </span>
+
+        </div>
+
+
+        <!-- History Body -->
+        <div class="modal-body">
+
+            <div class="history-list">
+
+                {% for transaction in transactions %}
+
+                <div class="history-item">
+
+                    <!-- Date -->
+                    <div class="history-date">
+                        {{ transaction.transaction_date }}
+                    </div>
+
+
+                    <!-- Details -->
+                    <div class="history-details">
+
+                        <strong>
+                            {{ transaction.description }}
+                        </strong>
+
+                        <span>
+                            {{ transaction.category }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- Amount -->
+                    <strong
+                        class="
+                        history-amount
+                        {% if transaction.type == 'income' %}
+                            positive
+                        {% else %}
+                            negative
+                        {% endif %}
+                        "
+                    >
+
+                        {% if transaction.type == "income" %}
+                            +₹{{ transaction.amount }}
+                        {% else %}
+                            -₹{{ transaction.amount }}
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+function openHistoryModal() {
+
+    const modal = document.getElementById("historyModal");
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+
+}
+
+
+function closeHistoryModal() {
+
+    const modal = document.getElementById("historyModal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+
+}
+
+</script>
+
 
 {% endblock %}
