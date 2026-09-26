@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from db import get_db_connection
 from werkzeug.security import generate_password_hash,check_password_hash
+from dotenv import load_dotenv
+load_dotenv()
 import os
+
 app = Flask(__name__)
 app.secret_key =  os.getenv("SECRET_KEY")
 
