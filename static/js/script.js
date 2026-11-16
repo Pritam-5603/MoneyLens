@@ -67,17 +67,6 @@ function initDashboard() {
     // Setup recent transactions
     setupDashboardTransactions();
     
-    // Setup mobile sidebar
-    const mobileToggle = document.getElementById('mobileToggle');
-    if (mobileToggle) {
-        mobileToggle.addEventListener('click', toggleSidebar);
-    }
-    
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (overlay) {
-        overlay.addEventListener('click', closeSidebar);
-    }
-    
     console.log('✅ Dashboard initialized successfully!');
 }
 
@@ -1542,15 +1531,20 @@ function setTheme(theme) {
 function loadTheme() {
     const themeInput = document.getElementById("settingsTheme");
     const pageTheme = document.body.dataset.theme;
-    let theme = (themeInput && themeInput.value) || pageTheme || "light";
+    let browserTheme = null;
 
-    if (!["light", "dark", "system"].includes(theme)) {
+    // The settings form contains the saved account preference and takes priority.
+    // On other pages, use the browser's temporary preference before the server fallback.
+    if (!themeInput || !themeInput.value) {
         try {
-            theme = localStorage.getItem("theme") || "light";
+            browserTheme = localStorage.getItem("theme");
         } catch (error) {
-            theme = "light";
+            browserTheme = null;
         }
     }
+
+    let theme = (themeInput && themeInput.value) || browserTheme || pageTheme || "light";
+    if (!["light", "dark", "system"].includes(theme)) theme = "light";
 
     applyThemeAppearance(theme);
 
