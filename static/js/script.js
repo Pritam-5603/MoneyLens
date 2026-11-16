@@ -1572,12 +1572,6 @@ function loadTheme() {
 document.addEventListener("DOMContentLoaded", function() {
     loadTheme();
 
-    const toggle = document.getElementById("mobileToggle");
-    const overlay = document.querySelector(".sidebar-overlay");
-
-    if (toggle) toggle.addEventListener("click", toggleSidebar);
-    if (overlay) overlay.addEventListener("click", closeSidebar);
-
     document.querySelectorAll(".dashboard-sidebar a").forEach(link => {
         link.addEventListener("click", closeSidebar);
     });
