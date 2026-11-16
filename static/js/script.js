@@ -528,20 +528,23 @@ document.addEventListener("DOMContentLoaded", function () {
 function toggleSidebar() {
     const sidebar = document.querySelector('.dashboard-sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
-    if (sidebar) {
-        sidebar.classList.toggle('open');
-        if (overlay) overlay.classList.toggle('active');
-    }
+    const toggle = document.getElementById('mobileToggle');
+    if (!sidebar) return;
+
+    const isOpen = sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active', isOpen);
+    if (toggle) toggle.setAttribute('aria-expanded', String(isOpen));
+    document.body.classList.toggle('sidebar-open', isOpen);
 }
 
-// Close sidebar on overlay click
 function closeSidebar() {
     const sidebar = document.querySelector('.dashboard-sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
-    if (sidebar) {
-        sidebar.classList.remove('open');
-        if (overlay) overlay.classList.remove('active');
-    }
+    const toggle = document.getElementById('mobileToggle');
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('sidebar-open');
 }
 
 // ============================================
@@ -1503,111 +1506,86 @@ document.addEventListener("DOMContentLoaded", function () {
 // 1. THEME
 // ============================================
 
-function setTheme(theme) {
+function applyThemeAppearance(theme) {
+    const resolvedTheme = theme === "system"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : theme;
 
-    // Remove active class from all theme buttons
-    document.querySelectorAll(".settings-option").forEach(button => {
-        button.classList.remove("active");
-    });
-
-
-    // Find selected theme button
-    document.querySelectorAll(".settings-option").forEach(button => {
-
-        if (
-            button.getAttribute("onclick") ===
-            `setTheme('${theme}')`
-        ) {
-            button.classList.add("active");
-        }
-
-    });
-
-
-    // Update hidden theme input
-    const themeInput = document.getElementById("settingsTheme");
-
-    if (themeInput) {
-        themeInput.value = theme;
-    }
-
-
-    // Apply theme
-    if (theme === "dark") {
-
-        document.body.classList.add("dark-theme");
-
-    }
-
-    else if (theme === "light") {
-
-        document.body.classList.remove("dark-theme");
-
-    }
-
-    else if (theme === "system") {
-
-        if (
-            window.matchMedia(
-                "(prefers-color-scheme: dark)"
-            ).matches
-        ) {
-
-            document.body.classList.add("dark-theme");
-
-        }
-
-        else {
-
-            document.body.classList.remove("dark-theme");
-
-        }
-
-    }
-
-
-    // Store temporarily in browser
-    // Database will be updated when
-    // Save Preferences is clicked.
-
-    localStorage.setItem("theme", theme);
+    document.body.classList.toggle("dark-theme", resolvedTheme === "dark");
+    document.body.dataset.theme = theme;
+    document.documentElement.style.colorScheme = resolvedTheme;
 }
 
+function setTheme(theme) {
+    if (!["light", "dark", "system"].includes(theme)) return;
 
-// ============================================
-// 2. LOAD THEME
-// ============================================
+    document.querySelectorAll(".settings-option").forEach(button => {
+        button.classList.toggle(
+            "active",
+            button.getAttribute("onclick") === "setTheme('" + theme + "')"
+        );
+    });
+
+    const themeInput = document.getElementById("settingsTheme");
+    if (themeInput) themeInput.value = theme;
+
+    applyThemeAppearance(theme);
+
+    // The preference is persisted to the account when Save Preferences is submitted.
+    try {
+        localStorage.setItem("theme", theme);
+    } catch (error) {
+        // Storage may be unavailable in private browsing.
+    }
+}
 
 function loadTheme() {
+    const themeInput = document.getElementById("settingsTheme");
+    const pageTheme = document.body.dataset.theme;
+    let theme = (themeInput && themeInput.value) || pageTheme || "light";
 
-    const themeInput =
-        document.getElementById("settingsTheme");
-
-
-    // First use database value from hidden input
-    if (themeInput && themeInput.value) {
-
-        const savedTheme = themeInput.value;
-
-        setTheme(savedTheme);
-
-        return;
+    if (!["light", "dark", "system"].includes(theme)) {
+        try {
+            theme = localStorage.getItem("theme") || "light";
+        } catch (error) {
+            theme = "light";
+        }
     }
 
+    applyThemeAppearance(theme);
 
-    // Fallback to localStorage
-    const savedTheme =
-        localStorage.getItem("theme");
-
-
-    if (savedTheme) {
-
-        setTheme(savedTheme);
-
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    if (media && !media.__moneyLensThemeListener) {
+        const updateSystemTheme = () => {
+            if ((document.body.dataset.theme || theme) === "system") {
+                applyThemeAppearance("system");
+            }
+        };
+        if (media.addEventListener) media.addEventListener("change", updateSystemTheme);
+        else if (media.addListener) media.addListener(updateSystemTheme);
+        media.__moneyLensThemeListener = true;
     }
-
 }
 
+
+// Global initialization: themes and navigation work on every page.
+document.addEventListener("DOMContentLoaded", function() {
+    loadTheme();
+
+    const toggle = document.getElementById("mobileToggle");
+    const overlay = document.querySelector(".sidebar-overlay");
+
+    if (toggle) toggle.addEventListener("click", toggleSidebar);
+    if (overlay) overlay.addEventListener("click", closeSidebar);
+
+    document.querySelectorAll(".dashboard-sidebar a").forEach(link => {
+        link.addEventListener("click", closeSidebar);
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") closeSidebar();
+    });
+});
 
 // ============================================
 // 3. PROFILE SETTINGS
