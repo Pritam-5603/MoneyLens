@@ -15,7 +15,8 @@ Dashboard | MoneyLens
 <!-- ============================================
      SIDEBAR
 ============================================ -->
-<aside class="dashboard-sidebar">
+<div class="sidebar-overlay" aria-hidden="true"></div>
+<aside class="dashboard-sidebar" id="dashboardSidebar">
 
     <!-- Logo -->
     <div class="sidebar-logo">
@@ -91,7 +92,7 @@ Dashboard | MoneyLens
 
             <div class="topbar-left">
                 <!-- Mobile Menu Toggle (for responsive) -->
-                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
+                <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation" aria-controls="dashboardSidebar" aria-expanded="false" type="button">
                     <span></span>
                     <span></span>
                     <span></span>
