@@ -5339,3 +5339,242 @@ body.dark-mode .theme-toast {
 
 }
 
+
+
+/* ============================================================
+   MONEYLENS GLOBAL THEME + RESPONSIVE POLISH
+============================================================ */
+:root {
+    color-scheme: light;
+    --ml-page: #f7fafc;
+    --ml-surface: #ffffff;
+    --ml-surface-muted: #f8fafc;
+    --ml-text: #17375e;
+    --ml-muted: #718096;
+    --ml-border: #e5edf5;
+    --ml-shadow: 0 8px 25px rgba(30, 60, 90, 0.08);
+}
+body {
+    min-width: 320px;
+    overflow-x: hidden;
+}
+body.dark-theme {
+    color-scheme: dark;
+    --ml-page: #111827;
+    --ml-surface: #1f2937;
+    --ml-surface-muted: #273449;
+    --ml-text: #e5edf7;
+    --ml-muted: #a8b6c8;
+    --ml-border: #37465b;
+    --ml-shadow: 0 8px 25px rgba(0, 0, 0, 0.22);
+    background: var(--ml-page) !important;
+    color: var(--ml-text);
+}
+body.dark-theme .dashboard-layout,
+body.dark-theme .dashboard-main,
+body.dark-theme .dashboard-content,
+body.dark-theme .main-content {
+    background: var(--ml-page) !important;
+    color: var(--ml-text);
+}
+body.dark-theme .dashboard-sidebar,
+body.dark-theme .dashboard-topbar,
+body.dark-theme .dashboard-card,
+body.dark-theme .settings-card,
+body.dark-theme .profile-card,
+body.dark-theme .analytics-card,
+body.dark-theme .transaction-card,
+body.dark-theme .budget-card,
+body.dark-theme .card,
+body.dark-theme .modal-content,
+body.dark-theme .feature-card {
+    background: var(--ml-surface) !important;
+    color: var(--ml-text) !important;
+    border-color: var(--ml-border) !important;
+    box-shadow: var(--ml-shadow);
+}
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme p,
+body.dark-theme label,
+body.dark-theme strong,
+body.dark-theme .page-title,
+body.dark-theme .settings-title,
+body.dark-theme .profile-title,
+body.dark-theme .profile-name,
+body.dark-theme .profile-stat-value,
+body.dark-theme .profile-card-header h3,
+body.dark-theme .settings-toggle-item strong,
+body.dark-theme .dashboard-card-header h3 {
+    color: var(--ml-text);
+}
+body.dark-theme .dashboard-sidebar .logo-link,
+body.dark-theme .dashboard-sidebar .logo-text {
+    color: var(--ml-text);
+}
+body.dark-theme .nav-link,
+body.dark-theme .footer-link,
+body.dark-theme .settings-subtitle,
+body.dark-theme .profile-subtitle,
+body.dark-theme .profile-email,
+body.dark-theme .profile-stat-label {
+    color: var(--ml-muted);
+}
+body.dark-theme .nav-link:hover,
+body.dark-theme .footer-link:hover,
+body.dark-theme .profile-info-item,
+body.dark-theme .settings-option,
+body.dark-theme .profile-form .form-control {
+    background: var(--ml-surface-muted) !important;
+    color: var(--ml-text) !important;
+    border-color: var(--ml-border) !important;
+}
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea,
+body.dark-theme .form-control,
+body.dark-theme .search-box {
+    background-color: var(--ml-surface-muted);
+    color: var(--ml-text);
+    border-color: var(--ml-border);
+}
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+    color: #94a3b8;
+}
+body.dark-theme table,
+body.dark-theme th,
+body.dark-theme td,
+body.dark-theme .settings-toggle-item,
+body.dark-theme .profile-card-header,
+body.dark-theme .profile-stats {
+    border-color: var(--ml-border) !important;
+}
+body.dark-theme th,
+body.dark-theme td {
+    color: var(--ml-text);
+}
+body.dark-theme .settings-option.active {
+    background: rgba(102, 126, 234, 0.2) !important;
+    color: #a5b4fc !important;
+}
+body.dark-theme .settings-danger-btn {
+    background: #3b252b;
+}
+body.dark-theme .sidebar-overlay {
+    background: rgba(0, 0, 0, 0.62);
+}
+.sidebar-overlay {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+body.sidebar-open {
+    overflow: hidden;
+}
+.mobile-toggle {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    padding: 9px;
+    border: 1px solid var(--ml-border, #e5edf5);
+    border-radius: 10px;
+    background: var(--ml-surface, #fff);
+    cursor: pointer;
+}
+.mobile-toggle span {
+    display: block;
+    width: 19px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+}
+@media (max-width: 900px) {
+    .dashboard-sidebar {
+        width: min(280px, 84vw);
+        max-width: 84vw;
+        height: 100dvh;
+        padding-bottom: env(safe-area-inset-bottom);
+        overscroll-behavior: contain;
+    }
+    .dashboard-main {
+        width: 100%;
+        min-width: 0;
+    }
+    .dashboard-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        gap: 12px;
+    }
+    .topbar-left,
+    .topbar-right {
+        min-width: 0;
+    }
+    .dashboard-content {
+        width: 100%;
+        min-width: 0;
+    }
+}
+@media (max-width: 768px) {
+    .container {
+        width: min(92%, 100%);
+    }
+    .hero-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 28px;
+        padding: 2.5rem 0;
+    }
+    .hero-content h1 {
+        font-size: clamp(1.8rem, 7vw, 2.5rem);
+    }
+    .features-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .settings-grid,
+    .profile-content {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .profile-form-row,
+    .profile-info-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .dashboard-topbar {
+        flex-wrap: wrap;
+    }
+    .search-wrapper {
+        max-width: 100%;
+    }
+}
+@media (max-width: 480px) {
+    .dashboard-topbar {
+        align-items: center;
+    }
+    .page-title {
+        font-size: 18px;
+    }
+    .topbar-right .search-wrapper {
+        display: none;
+    }
+    .financial-overview {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .settings-card,
+    .profile-card {
+        padding: 18px;
+    }
+    .settings-options {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .settings-option:last-child {
+        grid-column: auto;
+    }
+    .profile-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
