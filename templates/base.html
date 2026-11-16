@@ -15,7 +15,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="theme-{{ user_theme }}">
+<body class="theme-{{ settings.theme if settings is defined and settings and settings.theme else session.get('theme', 'light') }}" data-theme="{{ settings.theme if settings is defined and settings and settings.theme else session.get('theme', 'light') }}">
     <!--Navbar  -->
     {% block navbar %}
     
