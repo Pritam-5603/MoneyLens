@@ -28,153 +28,192 @@ def login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # ============================================
-        # GET USER + PASSWORD + THEME
-        # ============================================
-
-        query = """
-        SELECT
-            users.id,
-            users.password,
-            COALESCE(user_settings.theme, 'light')
-        FROM users
-        LEFT JOIN user_settings
-            ON users.id = user_settings.user_id
-        WHERE users.username = %s
-        """
-
-        cursor.execute(query, (username,))
-
-        result = cursor.fetchone()
-
-        # ============================================
-        # CHECK USER
-        # ============================================
-
-        if result:
-
-            if check_password_hash(result[1], password):
-
-                # ====================================
-                # CREATE LOGIN SESSION
-                # ====================================
-
-                session["user_id"] = result[0]
-
-                # Save theme in session
-                session["theme"] = result[2] or "light"
-
-                cursor.close()
-                connection.close()
-
-                return redirect(url_for("dashboard"))
-
-            else:
-
-                cursor.close()
-                connection.close()
-
-                flash("Incorrect password", "error")
-                return redirect(url_for("login"))
-
-        else:
-
-            cursor.close()
-            connection.close()
-
-            flash("User not found", "error")
+        if not username or not password:
+            flash("Please enter your username and password.", "error")
             return redirect(url_for("login"))
 
+        connection = None
+        cursor = None
+
+        try:
+            connection = get_db_connection()
+            cursor = connection.cursor()
+
+            query = """
+                SELECT
+                    users.id,
+                    users.password,
+                    COALESCE(user_settings.theme, 'light')
+                FROM users
+                LEFT JOIN user_settings
+                    ON users.id = user_settings.user_id
+                WHERE users.username = %s
+            """
+
+            cursor.execute(query, (username,))
+            result = cursor.fetchone()
+
+            if not result:
+                flash("User not found. Please check your username.", "error")
+                return redirect(url_for("login"))
+
+            if not check_password_hash(result[1], password):
+                flash("Incorrect password. Please try again.", "error")
+                return redirect(url_for("login"))
+
+            # Create a fresh session after successful authentication.
+            session.clear()
+            session["user_id"] = result[0]
+            session["theme"] = result[2] or "light"
+
+            return redirect(url_for("dashboard"))
+
+        except Exception:
+            app.logger.exception("Login error")
+            flash("Something went wrong. Please try again.", "error")
+            return redirect(url_for("login"))
+
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+
     return render_template("login.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "POST":
 
-        fullname = request.form["fullname"]
-        username = request.form["username"]
-        email = request.form["email"]
-        password = request.form["password"]
-        confirm_password = request.form["confirm_password"]
+        fullname = request.form.get("fullname", "").strip()
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        # Validate required fields.
+        if not all([fullname, username, email, password, confirm_password]):
+            flash("Please fill in all the required fields.", "error")
+            return redirect(url_for("register"))
+
+        if not request.form.get("terms"):
+            flash("Please accept the Terms of Service to continue.", "error")
+            return redirect(url_for("register"))
 
         if password != confirm_password:
-            return "Passwords do not match"
+            flash("Passwords do not match.", "error")
+            return redirect(url_for("register"))
+
+        if len(password) < 8:
+            flash("Password must contain at least 8 characters.", "error")
+            return redirect(url_for("register"))
 
         hashed_password = generate_password_hash(password)
 
-        connection = get_db_connection()
-        cursor = connection.cursor()
+        connection = None
+        cursor = None
 
-        query = """
-            INSERT INTO users
-            (fullname, username, email, password)
-            VALUES (%s, %s, %s, %s)
-        """
+        try:
+            connection = get_db_connection()
+            cursor = connection.cursor()
 
-        values = (
-            fullname,
-            username,
-            email,
-            hashed_password
-        )
+            # Check whether username or email already exists.
+            cursor.execute(
+                """
+                SELECT username, email
+                FROM users
+                WHERE username = %s OR email = %s
+                """,
+                (username, email)
+            )
 
-        cursor.execute(query, values)
+            existing_user = cursor.fetchone()
 
-        connection.commit()
-        # ============================================
-# CREATE DEFAULT USER SETTINGS
-# ============================================
+            if existing_user:
+                if existing_user[0] == username:
+                    flash("This username is already taken.", "error")
+                else:
+                    flash("An account with this email already exists.", "error")
 
-        user_id = cursor.lastrowid
+                return redirect(url_for("register"))
 
-        settings_query = """
-    INSERT INTO user_settings
-    (
-        user_id,
-        currency,
-        theme,
-        date_format,
-        language,
-        email_notifications,
-        budget_alerts,
-        weekly_reports,
-        ai_insights,
-        marketing_updates
-    )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-"""
+            # Create user.
+            cursor.execute(
+                """
+                INSERT INTO users
+                    (fullname, username, email, password)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (fullname, username, email, hashed_password)
+            )
 
-        cursor.execute(
-        settings_query,
-    (
-        user_id,
-        "INR",
-        "light",
-        "DD/MM/YYYY",
-        "en",
-        1,
-        1,
-        1,
-        1,
-        0
-    )
-)
+            user_id = cursor.lastrowid
 
-        connection.commit()
+            # Create default settings for the new user.
+            cursor.execute(
+                """
+                INSERT INTO user_settings
+                (
+                    user_id,
+                    currency,
+                    theme,
+                    date_format,
+                    language,
+                    email_notifications,
+                    budget_alerts,
+                    weekly_reports,
+                    ai_insights,
+                    marketing_updates
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    user_id,
+                    "INR",
+                    "light",
+                    "DD/MM/YYYY",
+                    "en",
+                    1,
+                    1,
+                    1,
+                    1,
+                    0
+                )
+            )
 
-        cursor.close()
-        connection.close()
+            # Commit both inserts together.
+            connection.commit()
 
-        return redirect(url_for("login"))
+            flash("Account created successfully. Please sign in.", "success")
+            return redirect(url_for("login"))
+
+        except Exception as error:
+
+            if connection:
+                connection.rollback()
+
+            # MySQL duplicate-entry error (for example, a concurrent registration).
+            if getattr(error, "errno", None) == 1062:
+                flash("That username or email is already registered.", "error")
+            else:
+                app.logger.exception("Registration error")
+                flash("Unable to create your account. Please try again.", "error")
+
+            return redirect(url_for("register"))
+
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
 
     return render_template("register.html")
+
 
 
 @app.route("/forgot-password")
@@ -185,7 +224,8 @@ def forgot_password():
 @app.route("/logout")
 def logout():
     session.clear()
-    return render_template("login.html")
+    flash("You have been logged out.", "success")
+    return redirect(url_for("login"))
 
 
 # ==========================================
@@ -853,6 +893,12 @@ def analytics():
 
 @app.route("/dashboard/budgets" , methods = ["GET","POST"])
 def budgets():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    user_id = session["user_id"]
+
     if request.method == "POST":
 
         category = request.form["category"]
@@ -887,10 +933,7 @@ def budgets():
 
         return redirect(url_for("budgets"))
 
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    user_id = session["user_id"]
+    
 
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -1580,30 +1623,35 @@ def settings():
 
 @app.context_processor
 def inject_user_settings():
-
+    # Keep the selected theme available to every page, not only Settings.
     settings = None
+    user_theme = session.get("theme", "light")
 
     if "user_id" in session:
-
         connection = get_db_connection()
         cursor = connection.cursor(dictionary=True)
 
-        cursor.execute(
-            """
-            SELECT theme
-            FROM user_settings
-            WHERE user_id = %s
-            """,
-            (session["user_id"],)
-        )
+        try:
+            cursor.execute(
+                """
+                SELECT theme
+                FROM user_settings
+                WHERE user_id = %s
+                """,
+                (session["user_id"],)
+            )
+            settings = cursor.fetchone()
 
-        settings = cursor.fetchone()
-
-        cursor.close()
-        connection.close()
+            if settings and settings.get("theme"):
+                user_theme = settings["theme"]
+                session["theme"] = user_theme
+        finally:
+            cursor.close()
+            connection.close()
 
     return {
-        "settings": settings
+        "settings": settings,
+        "user_theme": user_theme
     }
 
 # ==========================================

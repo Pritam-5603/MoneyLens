@@ -1,847 +1,610 @@
-// ============================================
-// ANALYTICS CHARTS - CHART.JS
-// ============================================
 
-let incomeExpenseChart = null;
-let spendingBreakdownChart = null;
-let incomeSourcesChart = null;
-let monthlySavingsChart = null;
+/* ==================================================
+   MONEYLENS - ANALYTICS CHARTS
+   Purpose: Create and manage Analytics page charts
+   Requires: Chart.js
+================================================== */
 
-// ============================================
-// 1. CHART COLORS
-// ============================================
+(() => {
+    "use strict";
 
-const chartColors = {
-    income: '#00b894',
-    expense: '#fc8181',
-    savings: '#667eea',
-    housing: '#4a9eff',
-    food: '#f6ad55',
-    transport: '#68d391',
-    shopping: '#fc8181',
-    entertainment: '#9f7aea',
-    salary: '#00b894',
-    freelance: '#4299e1',
-    investment: '#ed8936',
-    gift: '#9f7aea',
-    other: '#a0aec0'
-};
+    console.log("📊 MoneyLens Analytics Charts loaded!");
 
-// ============================================
-// 2. INCOME VS EXPENSES CHART (Line Chart)
-// ============================================
+    // -----------------------------------------------
+    // 1. THEME COLORS
+    // -----------------------------------------------
 
-// ============================================
-// INCOME VS EXPENSES CHART
-// ============================================
+    function getChartTheme() {
+        const isDark =
+            document.body.dataset.theme === "dark" ||
+            document.body.classList.contains("dark-theme");
 
-function createIncomeExpenseChart() {
+        return {
+            text: isDark ? "#A7B4C7" : "#64748B",
+            heading: isDark ? "#F0F4FA" : "#1E293B",
+            grid: isDark
+                ? "rgba(167, 180, 199, 0.12)"
+                : "rgba(100, 116, 139, 0.12)",
+            tooltipBackground: isDark ? "#202E43" : "#FFFFFF",
+            tooltipText: isDark ? "#F0F4FA" : "#1E293B",
+            border: isDark ? "#172235" : "#FFFFFF",
 
-    const ctx = document.getElementById('incomeExpenseChart');
+            income: "#42B883",
+            expense: "#E47D83",
+            net: "#8BA8D8",
 
-    if (!ctx) return;
-
-    if (incomeExpenseChart) {
-        incomeExpenseChart.destroy();
-    }
-
-    // Get monthly data from Flask
-    const dataElement = document.getElementById('monthly-data');
-
-    const monthlyData = dataElement
-        ? JSON.parse(dataElement.textContent)
-        : [];
-
-    if (monthlyData.length === 0) {
-        console.log('ℹ️ No monthly income/expense data available.');
-        return;
-    }
-
-    // Month labels
-    const labels = monthlyData.map(item => {
-
-        const [year, month] = item.month.split('-');
-
-        const date = new Date(
-            Number(year),
-            Number(month) - 1
-        );
-
-        return date.toLocaleString('en-US', {
-            month: 'short'
-        });
-    });
-
-    // Income values
-    const incomeData = monthlyData.map(item =>
-        Number(item.income)
-    );
-
-    // Expense values
-    const expenseData = monthlyData.map(item =>
-        Number(item.expenses)
-    );
-
-    incomeExpenseChart = new Chart(ctx, {
-
-        type: 'line',
-
-        data: {
-
-            labels: labels,
-
-            datasets: [
-
-                {
-                    label: 'Income',
-
-                    data: incomeData,
-
-                    borderColor: chartColors.income,
-
-                    backgroundColor: 'rgba(16, 185, 129, 0.10)',
-
-                    borderWidth: 3,
-
-                    tension: 0.4,
-
-                    fill: false,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6
-                },
-
-                {
-                    label: 'Expenses',
-
-                    data: expenseData,
-
-                    borderColor: chartColors.expense,
-
-                    backgroundColor: 'rgba(239, 68, 68, 0.10)',
-
-                    borderWidth: 3,
-
-                    tension: 0.4,
-
-                    fill: false,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6
-                }
-
+            categories: [
+                "#42B883",
+                "#8BA8D8",
+                "#E6AD62",
+                "#E47D83",
+                "#9B8AD8",
+                "#65B6C8",
+                "#A7B4C7",
+                "#D49A75"
             ]
-        },
+        };
+    }
 
-        options: {
 
-            responsive: true,
+    // -----------------------------------------------
+    // 2. READ DATA FROM FLASK
+    // -----------------------------------------------
 
-            maintainAspectRatio: false,
+    function readChartData(elementId) {
+        const element = document.getElementById(elementId);
 
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-
-            plugins: {
-
-                legend: {
-                    position: 'top',
-
-                    labels: {
-                        usePointStyle: true,
-                        padding: 18,
-                        font: {
-                            size: 12,
-                            family: "'Inter', sans-serif"
-                        }
-                    }
-                },
-
-                tooltip: {
-
-                    callbacks: {
-
-                        label: function(context) {
-
-                            return (
-                                context.dataset.label +
-                                ': ₹' +
-                                Number(context.raw)
-                                    .toLocaleString('en-IN')
-                            );
-
-                        }
-
-                    }
-
-                }
-
-            },
-
-            scales: {
-
-                y: {
-
-                    beginAtZero: true,
-
-                    ticks: {
-
-                        callback: function(value) {
-
-                            return '₹' +
-                                Number(value)
-                                    .toLocaleString('en-IN');
-
-                        }
-
-                    }
-
-                }
-
-            }
-
+        if (!element) {
+            console.warn(`Chart data element not found: ${elementId}`);
+            return null;
         }
 
-    });
-
-    console.log(
-        '✅ Income vs Expenses chart created using database data!'
-    );
-}
-
-// ============================================
-// 3. SPENDING BREAKDOWN CHART (Donut Chart)
-// ============================================
-
-function createSpendingBreakdownChart() {
-
-    const ctx = document.getElementById('spendingBreakdownChart');
-
-    if (!ctx) return;
-
-    if (spendingBreakdownChart) {
-        spendingBreakdownChart.destroy();
+        try {
+            return JSON.parse(element.textContent);
+        } catch (error) {
+            console.error(`Invalid JSON in ${elementId}:`, error);
+            return null;
+        }
     }
 
 
-    // ============================================
-    // GET DATA FROM FLASK
-    // ============================================
-
-    const dataElement =
-        document.getElementById('category-spending-data');
-
-    const categoryData = dataElement
-        ? JSON.parse(dataElement.textContent)
-        : [];
-
-
-    if (categoryData.length === 0) {
-
-        console.log('ℹ️ No spending data available.');
-
-        return;
-    }
-
-
-    // ============================================
-    // CATEGORY NAMES
-    // ============================================
-
-    const labels = categoryData.map(item =>
-        item.category
-    );
-
-
-    // ============================================
-    // CATEGORY AMOUNTS
-    // ============================================
-
-    const amounts = categoryData.map(item =>
-        Number(item.total)
-    );
-
-
-    // ============================================
-    // CHART COLORS
-    // ============================================
-
-    const categoryColors = [
-
-        chartColors.housing,
-        chartColors.food,
-        chartColors.transport,
-        chartColors.shopping,
-        chartColors.entertainment,
-
-        '#9B59B6',
-        '#E67E22',
-        '#1ABC9C',
-        '#34495E',
-        '#F1C40F',
-        '#E74C3C',
-        '#3498DB'
-
-    ];
-
-
-    // Give every category a different color
-    const backgroundColors = categoryData.map(
-        (item, index) =>
-            categoryColors[index % categoryColors.length]
-    );
-
-
-    // ============================================
-    // CREATE DONUT CHART
-    // ============================================
-
-    spendingBreakdownChart = new Chart(ctx, {
-
-        type: 'doughnut',
-
-        data: {
-
-            labels: labels,
-
-            datasets: [{
-
-                data: amounts,
-
-                backgroundColor: backgroundColors,
-
-                borderWidth: 2,
-
-                borderColor: '#ffffff'
-
-            }]
-
-        },
-
-
-        // ========================================
-        // CHART OPTIONS
-        // ========================================
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            cutout: '70%',
-
-
-            plugins: {
-
-                // ==================================
-                // LEGEND
-                // ==================================
-
-                legend: {
-
-                    position: 'bottom',
-
-                    labels: {
-
-                        usePointStyle: true,
-
-                        padding: 16,
-
-                        font: {
-
-                            size: 12,
-
-                            family: "'Inter', sans-serif"
-
-                        }
-
-                    }
-
-                },
-
-
-                // ==================================
-                // TOOLTIP
-                // ==================================
-
-                tooltip: {
-
-                    backgroundColor:
-                        'rgba(255,255,255,0.95)',
-
-                    titleColor: '#2d3748',
-
-                    bodyColor: '#4a5568',
-
-                    borderColor: '#e2e8f0',
-
-                    borderWidth: 1,
-
-                    padding: 12,
-
-                    cornerRadius: 8,
-
-
-                    callbacks: {
-
-                        label: function(context) {
-
-                            const total =
-                                context.dataset.data.reduce(
-                                    (a, b) => a + b,
-                                    0
-                                );
-
-
-                            const percentage =
-                                (
-                                    (context.raw / total) * 100
-                                ).toFixed(1);
-
-
-                            return (
-
-                                context.label +
-
-                                ': ₹' +
-
-                                Number(context.raw)
-                                    .toLocaleString('en-IN') +
-
-                                ' (' +
-
-                                percentage +
-
-                                '%)'
-
-                            );
-
-                        }
-
-                    }
-
-                }
-
-            }
-
+    // -----------------------------------------------
+    // 3. DATA HELPERS
+    // -----------------------------------------------
+
+    function findArray(data, possibleKeys) {
+        if (!data || typeof data !== "object") {
+            return [];
         }
 
-    });
-
-
-    console.log(
-        '✅ Spending Breakdown Chart created using database data!'
-    );
-
-}
-// ============================================
-// 4. INCOME SOURCES CHART (Bar Chart)
-// ============================================
-
-// ============================================
-// INCOME SOURCES CHART (Bar Chart)
-// ============================================
-
-function createIncomeSourcesChart() {
-
-    const ctx = document.getElementById('incomeSourcesChart');
-
-    if (!ctx) return;
-
-    if (incomeSourcesChart) {
-        incomeSourcesChart.destroy();
-    }
-
-    // Get income source data from Flask
-    const dataElement = document.getElementById('income-sources-data');
-
-    const incomeData = dataElement
-        ? JSON.parse(dataElement.textContent)
-        : [];
-
-    if (incomeData.length === 0) {
-        console.log('ℹ️ No income source data available.');
-        return;
-    }
-
-    // Category names
-    const labels = incomeData.map(item =>
-        item.category
-    );
-
-    // Income amounts
-    const amounts = incomeData.map(item =>
-        Number(item.total)
-    );
-
-    incomeSourcesChart = new Chart(ctx, {
-
-        type: 'bar',
-
-        data: {
-
-            labels: labels,
-
-            datasets: [{
-                label: 'Income',
-
-                data: amounts,
-
-                backgroundColor: '#10B981',
-
-                borderRadius: 8,
-
-                borderSkipped: false,
-
-                barThickness: 32
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            plugins: {
-
-                legend: {
-                    display: false
-                },
-
-                tooltip: {
-
-                    callbacks: {
-
-                        label: function(context) {
-
-                            return (
-                                'Income: ₹' +
-                                Number(context.raw)
-                                    .toLocaleString('en-IN')
-                            );
-
-                        }
-
-                    }
-
-                }
-
-            },
-
-            scales: {
-
-                x: {
-
-                    grid: {
-                        display: false
-                    },
-
-                    ticks: {
-                        color: '#64748B',
-
-                        font: {
-                            size: 12,
-                            family: "'Inter', sans-serif"
-                        }
-                    }
-
-                },
-
-                y: {
-
-                    beginAtZero: true,
-
-                    grid: {
-                        color: '#E2E8F0'
-                    },
-
-                    ticks: {
-
-                        color: '#64748B',
-
-                        callback: function(value) {
-
-                            return '₹' +
-                                Number(value)
-                                    .toLocaleString('en-IN');
-
-                        },
-
-                        font: {
-                            size: 11,
-                            family: "'Inter', sans-serif"
-                        }
-                    }
-
-                }
-
+        for (const key of possibleKeys) {
+            if (Array.isArray(data[key])) {
+                return data[key];
             }
-
         }
 
-    });
-
-    console.log(
-        '✅ Income Sources bar chart created using database data!'
-    );
-}
-
-// ============================================
-// MONTHLY SAVINGS CHART
-// ============================================
-
-function createMonthlySavingsChart() {
-
-    const ctx = document.getElementById('monthlySavingsChart');
-
-    if (!ctx) return;
-
-    if (monthlySavingsChart) {
-        monthlySavingsChart.destroy();
+        return [];
     }
 
-    // Get savings data from Flask
-    const dataElement = document.getElementById('monthly-savings-data');
 
-    const savingsData = dataElement
-        ? JSON.parse(dataElement.textContent)
-        : [];
+    function findValue(object, possibleKeys) {
+        if (!object || typeof object !== "object") {
+            return undefined;
+        }
 
-    if (savingsData.length === 0) {
-        console.log('ℹ️ No monthly savings data available.');
-        return;
+        for (const key of possibleKeys) {
+            if (object[key] !== undefined && object[key] !== null) {
+                return object[key];
+            }
+        }
+
+        return undefined;
     }
 
-    // Month labels
-    const labels = savingsData.map(item => {
 
-        const [year, month] = item.month.split('-');
+    function toNumber(value) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number : 0;
+    }
 
-        const date = new Date(
-            Number(year),
-            Number(month) - 1
+
+    function getLabels(data, possibleKeys) {
+        const labels = findArray(data, possibleKeys);
+
+        return labels.map(label => {
+            if (typeof label === "object" && label !== null) {
+                return String(
+                    findValue(label, ["label", "month", "date", "name"]) ?? ""
+                );
+            }
+
+            return String(label);
+        });
+    }
+
+
+    // -----------------------------------------------
+    // 4. NORMALIZE MONTHLY DATA
+    // -----------------------------------------------
+
+    function normalizeMonthlyData(data) {
+        if (!data) {
+            return { labels: [], income: [], expenses: [], net: [] };
+        }
+
+        // Format 1: Array of objects
+        // Example:
+        // [{ month: "Jan", income: 5000, expenses: 2000 }]
+
+        if (Array.isArray(data)) {
+            return {
+                labels: data.map(item =>
+                    String(findValue(item, ["month", "label", "date", "name"]) ?? "")
+                ),
+
+                income: data.map(item =>
+                    toNumber(findValue(item, ["income", "total_income"]))
+                ),
+
+                expenses: data.map(item =>
+                    toNumber(findValue(item, ["expenses", "expense", "total_expenses"]))
+                ),
+
+                net: data.map(item =>
+                    toNumber(findValue(item, ["net", "savings", "balance"]))
+                )
+            };
+        }
+
+        // Format 2: Object containing arrays
+        // Example:
+        // { labels: [], income: [], expenses: [] }
+
+        const labels = getLabels(data, [
+            "labels", "months", "dates", "categories"
+        ]);
+
+        return {
+            labels,
+
+            income: findArray(data, [
+                "income", "incomes", "total_income"
+            ]).map(toNumber),
+
+            expenses: findArray(data, [
+                "expenses", "expense", "total_expenses"
+            ]).map(toNumber),
+
+            net: findArray(data, [
+                "net", "savings", "balance"
+            ]).map(toNumber)
+        };
+    }
+
+
+    // -----------------------------------------------
+    // 5. NORMALIZE CATEGORY / SOURCE DATA
+    // -----------------------------------------------
+
+    function normalizeBreakdownData(data, labelKeys, valueKeys) {
+        if (!data) {
+            return { labels: [], values: [] };
+        }
+
+        // Format 1: Array of objects
+        // Example:
+        // [{ category: "Food", amount: 2500 }]
+
+        if (Array.isArray(data)) {
+            return {
+                labels: data.map(item =>
+                    String(findValue(item, labelKeys) ?? "")
+                ),
+
+                values: data.map(item =>
+                    toNumber(findValue(item, valueKeys))
+                )
+            };
+        }
+
+        // Format 2: Object containing label and value arrays
+
+        const labels = getLabels(data, [
+            "labels", "categories", "sources", "names"
+        ]);
+
+        const values = findArray(data, [
+            "values", "amounts", "totals", "spending", "income"
+        ]);
+
+        if (labels.length && values.length) {
+            return {
+                labels,
+                values: values.map(toNumber)
+            };
+        }
+
+        // Format 3: Simple object
+        // Example:
+        // { Food: 2500, Transport: 1000 }
+
+        const entries = Object.entries(data).filter(
+            ([, value]) =>
+                typeof value === "number" ||
+                (typeof value === "string" && value.trim() !== "")
         );
 
-        return date.toLocaleString('en-US', {
-            month: 'short'
-        });
-    });
+        return {
+            labels: entries.map(([key]) => key),
+            values: entries.map(([, value]) => toNumber(value))
+        };
+    }
 
-    // Savings values
-    const amounts = savingsData.map(item =>
-        Number(item.savings)
-    );
 
-    monthlySavingsChart = new Chart(ctx, {
+    // -----------------------------------------------
+    // 6. COMMON CHART OPTIONS
+    // -----------------------------------------------
 
-        type: 'line',
-
-        data: {
-
-            labels: labels,
-
-            datasets: [{
-
-                label: 'Savings',
-
-                data: amounts,
-
-                borderColor: '#10B981',
-
-                backgroundColor: 'rgba(16, 185, 129, 0.10)',
-
-                borderWidth: 3,
-
-                tension: 0.4,
-
-                fill: true,
-
-                pointRadius: 4,
-
-                pointHoverRadius: 6
-
-            }]
-
-        },
-
-        options: {
-
-            responsive: true,
-
-            maintainAspectRatio: false,
-
-            interaction: {
-                mode: 'index',
-                intersect: false
-            },
-
-            plugins: {
-
-                legend: {
+    function getAxisOptions(theme) {
+        return {
+            x: {
+                ticks: {
+                    color: theme.text
+                },
+                grid: {
                     display: false
                 },
-
-                tooltip: {
-
-                    callbacks: {
-
-                        label: function(context) {
-
-                            return (
-                                'Savings: ₹' +
-                                Number(context.raw)
-                                    .toLocaleString('en-IN')
-                            );
-
-                        }
-
-                    }
-
+                border: {
+                    display: false
                 }
-
             },
 
-            scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: theme.text,
+                    callback: value => "₹" + Number(value).toLocaleString("en-IN")
+                },
+                grid: {
+                    color: theme.grid
+                },
+                border: {
+                    display: false
+                }
+            }
+        };
+    }
 
-                x: {
 
-                    grid: {
-                        display: false
-                    },
+    function getTooltipOptions(theme) {
+        return {
+            backgroundColor: theme.tooltipBackground,
+            titleColor: theme.tooltipText,
+            bodyColor: theme.tooltipText,
+            borderColor: theme.grid,
+            borderWidth: 1,
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: true
+        };
+    }
 
-                    ticks: {
-                        color: '#64748B',
 
-                        font: {
-                            size: 12,
-                            family: "'Inter', sans-serif"
-                        }
-                    }
+    function getLegendOptions(theme) {
+        return {
+            position: "bottom",
+            labels: {
+                color: theme.text,
+                usePointStyle: true,
+                pointStyle: "circle",
+                padding: 20,
+                boxWidth: 8
+            }
+        };
+    }
 
+
+    // -----------------------------------------------
+    // 7. INCOME VS EXPENSE CHART
+    // -----------------------------------------------
+
+    function createIncomeExpenseChart(theme) {
+        const canvas = document.getElementById("incomeExpenseChart");
+
+        if (!canvas) return;
+
+        const rawData = readChartData("monthly-data");
+        const data = normalizeMonthlyData(rawData);
+
+        if (!data.labels.length) {
+            console.warn("No monthly data available for Income vs Expense chart.");
+            return;
+        }
+
+        const datasets = [
+            {
+                label: "Income",
+                data: data.income,
+                borderColor: theme.income,
+                backgroundColor: "rgba(66, 184, 131, 0.10)",
+                borderWidth: 2.5,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: theme.income,
+                tension: 0.35,
+                fill: true
+            },
+            {
+                label: "Expenses",
+                data: data.expenses,
+                borderColor: theme.expense,
+                backgroundColor: "rgba(228, 125, 131, 0.08)",
+                borderWidth: 2.5,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                pointBackgroundColor: theme.expense,
+                tension: 0.35,
+                fill: true
+            }
+        ];
+
+        if (data.net.length) {
+            datasets.push({
+                label: "Net Savings",
+                data: data.net,
+                borderColor: theme.net,
+                backgroundColor: "transparent",
+                borderWidth: 2,
+                pointRadius: 2,
+                tension: 0.35,
+                borderDash: [5, 4]
+            });
+        }
+
+        new Chart(canvas, {
+            type: "line",
+
+            data: {
+                labels: data.labels,
+                datasets
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                interaction: {
+                    intersect: false,
+                    mode: "index"
                 },
 
-                y: {
+                plugins: {
+                    legend: getLegendOptions(theme),
+                    tooltip: getTooltipOptions(theme)
+                },
 
-                    beginAtZero: false,
-
-                    grid: {
-                        color: '#E2E8F0'
-                    },
-
-                    ticks: {
-
-                        color: '#64748B',
-
-                        callback: function(value) {
-
-                            return '₹' +
-                                Number(value)
-                                    .toLocaleString('en-IN');
-
-                        },
-
-                        font: {
-                            size: 11,
-                            family: "'Inter', sans-serif"
-                        }
-                    }
-
-                }
-
+                scales: getAxisOptions(theme)
             }
-
-        }
-
-    });
-
-    console.log(
-        '✅ Monthly Savings chart created using database data!'
-    );
-}
-// ============================================
-// 6. UPDATE CHARTS ON PERIOD CHANGE
-// ============================================
-
-document.addEventListener('periodChange', function(event) {
-    const period = event.detail.period;
-    console.log(`📊 Updating charts for period: ${period}`);
-    
-    // Recreate income vs expense chart with new data
-    createIncomeExpenseChart(period);
-    
-    // Animate stats for new period (simulated)
-    setTimeout(() => {
-        const statValues = document.querySelectorAll('.analytics-stat-value');
-        statValues.forEach(stat => {
-            // Add a subtle flash effect
-            stat.style.transition = 'color 0.3s ease';
-            stat.style.color = '#667eea';
-            setTimeout(() => {
-                stat.style.color = '';
-            }, 500);
         });
-    }, 300);
-});
-
-// ============================================
-// 7. INITIALIZE ALL CHARTS
-// ============================================
-
-function initCharts() {
-    console.log('📊 Initializing charts...');
-    
-    // Wait for Chart.js to load
-    if (typeof Chart === 'undefined') {
-        console.log('⏳ Waiting for Chart.js to load...');
-        setTimeout(initCharts, 500);
-        return;
     }
-    
-    // Create all charts
-    createIncomeExpenseChart('6m');
-    createSpendingBreakdownChart();
-    createIncomeSourcesChart();
-    createMonthlySavingsChart();
-    
-    console.log('✅ All charts initialized successfully!');
-}
 
-// ============================================
-// 8. HANDLE WINDOW RESIZE
-// ============================================
 
-let resizeTimeout;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        // Charts auto-resize with Chart.js responsive option
-        console.log('📐 Window resized, charts updated');
-    }, 250);
-});
+    // -----------------------------------------------
+    // 8. SPENDING BREAKDOWN CHART
+    // -----------------------------------------------
 
-// ============================================
-// 9. INITIALIZE ON DOM READY
-// ============================================
+    function createSpendingBreakdownChart(theme) {
+        const canvas = document.getElementById("spendingBreakdownChart");
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on the analytics page
-    const analyticsHeader = document.querySelector('.analytics-header');
-    if (analyticsHeader) {
-        console.log('📊 Analytics page detected');
-        
-        // Initialize charts
-        initCharts();
-        
-        // Initialize analytics page functions from script.js
-        if (typeof initAnalytics === 'function') {
-            initAnalytics();
+        if (!canvas) return;
+
+        const rawData = readChartData("category-spending-data");
+
+        const data = normalizeBreakdownData(
+            rawData,
+            ["category", "name", "label"],
+            ["amount", "total", "value", "spending"]
+        );
+
+        if (!data.labels.length) {
+            console.warn("No category data available for Spending Breakdown chart.");
+            return;
         }
+
+        new Chart(canvas, {
+            type: "doughnut",
+
+            data: {
+                labels: data.labels,
+
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: theme.categories,
+                    borderColor: theme.border,
+                    borderWidth: 3,
+                    hoverOffset: 6
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+
+                plugins: {
+                    legend: getLegendOptions(theme),
+                    tooltip: getTooltipOptions(theme)
+                }
+            }
+        });
     }
-});
+
+
+    // -----------------------------------------------
+    // 9. INCOME SOURCES CHART
+    // -----------------------------------------------
+
+    function createIncomeSourcesChart(theme) {
+        const canvas = document.getElementById("incomeSourcesChart");
+
+        if (!canvas) return;
+
+        const rawData = readChartData("income-sources-data");
+
+        const data = normalizeBreakdownData(
+            rawData,
+            ["source", "name", "label", "category"],
+            ["amount", "total", "value", "income"]
+        );
+
+        if (!data.labels.length) {
+            console.warn("No income source data available.");
+            return;
+        }
+
+        new Chart(canvas, {
+            type: "doughnut",
+
+            data: {
+                labels: data.labels,
+
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: theme.categories,
+                    borderColor: theme.border,
+                    borderWidth: 3,
+                    hoverOffset: 6
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "68%",
+
+                plugins: {
+                    legend: getLegendOptions(theme),
+                    tooltip: getTooltipOptions(theme)
+                }
+            }
+        });
+    }
+
+
+    // -----------------------------------------------
+    // 10. MONTHLY SAVINGS CHART
+    // -----------------------------------------------
+
+    function createMonthlySavingsChart(theme) {
+        const canvas = document.getElementById("monthlySavingsChart");
+
+        if (!canvas) return;
+
+        const rawData = readChartData("monthly-savings-data");
+
+        let labels = [];
+        let values = [];
+
+        if (Array.isArray(rawData)) {
+            labels = rawData.map(item =>
+                String(findValue(item, ["month", "label", "date", "name"]) ?? "")
+            );
+
+            values = rawData.map(item =>
+                toNumber(findValue(item, ["savings", "amount", "value", "balance"]))
+            );
+
+        } else if (rawData) {
+            labels = getLabels(rawData, [
+                "labels", "months", "dates"
+            ]);
+
+            values = findArray(rawData, [
+                "savings", "amounts", "values", "balance"
+            ]).map(toNumber);
+        }
+
+        if (!labels.length) {
+            console.warn("No monthly savings data available.");
+            return;
+        }
+
+        new Chart(canvas, {
+            type: "bar",
+
+            data: {
+                labels,
+
+                datasets: [{
+                    label: "Savings",
+                    data: values,
+                    backgroundColor: "rgba(66, 184, 131, 0.75)",
+                    borderColor: theme.income,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    maxBarThickness: 42
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: getTooltipOptions(theme)
+                },
+
+                scales: getAxisOptions(theme)
+            }
+        });
+    }
+
+
+    // -----------------------------------------------
+    // 11. INITIALIZE ANALYTICS CHARTS
+    // -----------------------------------------------
+
+    function initializeAnalyticsCharts() {
+        const analyticsPage = document.getElementById("incomeExpenseChart");
+
+        if (!analyticsPage) {
+            return;
+        }
+
+        if (typeof Chart === "undefined") {
+            console.error("Chart.js is not loaded. Check the Chart.js CDN script.");
+            return;
+        }
+
+        const theme = getChartTheme();
+
+        // Apply theme defaults
+        Chart.defaults.color = theme.text;
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        createIncomeExpenseChart(theme);
+        createSpendingBreakdownChart(theme);
+        createIncomeSourcesChart(theme);
+        createMonthlySavingsChart(theme);
+
+        console.log("✅ Analytics charts initialized!");
+    }
+
+
+    // -----------------------------------------------
+    // 12. START
+    // -----------------------------------------------
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeAnalyticsCharts
+        );
+    } else {
+        initializeAnalyticsCharts();
+    }
+
+})();

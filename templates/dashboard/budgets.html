@@ -477,6 +477,57 @@
 
 </div>
 
+
+<!-- ============================================
+     DELETE BUDGET CONFIRMATION MODAL
+============================================ -->
+<div class="modal" id="deleteBudgetModal">
+    <div class="modal-content delete-confirm-content">
+
+        <div class="delete-confirm-body">
+
+            <div class="delete-confirm-icon">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+
+            <h2>Delete Budget?</h2>
+
+            <p>
+                Are you sure you want to delete your
+                <strong id="deleteBudgetCategory">budget</strong> budget?
+            </p>
+
+            <span class="delete-confirm-warning">
+                This action cannot be undone. Your transaction records
+                will not be deleted.
+            </span>
+
+        </div>
+
+        <div class="modal-footer delete-confirm-footer">
+
+            <button
+                type="button"
+                class="btn-secondary"
+                id="cancelDeleteBudget"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="delete-confirm-btn"
+                id="confirmDeleteBudget"
+            >
+                <i class="fas fa-trash-alt"></i>
+                Delete Budget
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <!-- ============================================
      SCRIPTS
 ============================================ -->

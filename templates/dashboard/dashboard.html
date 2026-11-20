@@ -1,3 +1,4 @@
+
 {% extends "dashboard/dashboard_base.html" %}
 
 {% block dashboard_content %}
@@ -28,10 +29,7 @@
         </div>
         <div class="finance-value">₹{{ total_income }}</div>
         <div class="finance-bottom">
-            <span class="trend positive">
-                <i class="fas fa-arrow-up"></i> 8.2%
-            </span>
-            <span>from last month</span>
+            <span>Recorded income</span>
         </div>
     </div>
 
@@ -45,10 +43,7 @@
         </div>
         <div class="finance-value">₹{{ total_expenses }}</div>
         <div class="finance-bottom">
-            <span class="trend negative">
-                <i class="fas fa-arrow-down"></i> 3.4%
-            </span>
-            <span>from last month</span>
+            <span>Recorded expenses</span>
         </div>
     </div>
 
@@ -62,10 +57,7 @@
         </div>
         <div class="finance-value">₹{{ total_savings }}</div>
         <div class="finance-bottom">
-            <span class="trend positive">
-                <i class="fas fa-arrow-up"></i> 14.1%
-            </span>
-            <span>from last month</span>
+            <span>Income minus expenses</span>
         </div>
     </div>
 
@@ -100,6 +92,7 @@
                 </span>
                 <strong>₹{{ total_income }}</strong>
             </div>
+
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle expense-dot"></i>
@@ -107,12 +100,13 @@
                 </span>
                 <strong>₹{{ total_expenses }}</strong>
             </div>
+
             <div class="cash-summary-item">
                 <span>
                     <i class="fas fa-circle net-dot"></i>
                     Net Flow
                 </span>
-                <strong class="net-positive">{{ total_savings }}</strong>
+                <strong class="net-positive">₹{{ total_savings }}</strong>
             </div>
         </div>
 
@@ -134,6 +128,7 @@
         <!-- Spending Chart -->
         <div class="spending-chart-container">
             <canvas id="spendingChart"></canvas>
+
             <div class="spending-total">
                 <strong>₹{{ total_expenses }}</strong>
                 <span>Total spent</span>
@@ -143,20 +138,18 @@
         <!-- Spending Categories -->
         <div class="spending-categories">
 
-        {% for item in category_spending %}
+            {% for item in category_spending %}
+            <div class="spending-category">
+                <span>
+                    <i class="fas fa-circle"></i>
+                    {{ item.category }}
+                </span>
 
-        <div class="spending-category">
-
-        <span>
-            <i class="fas fa-circle"></i>
-            {{ item.category }}
-        </span>
-
-        <strong>₹{{ item.total }}</strong>
-
-        </div>
-
-        {% endfor %}
+                <strong>₹{{ item.total }}</strong>
+            </div>
+            {% else %}
+            <p class="empty-state">No spending recorded yet.</p>
+            {% endfor %}
 
         </div>
     </div>
@@ -175,6 +168,7 @@
                 <h3>Recent Transactions</h3>
                 <p>Your latest account activity</p>
             </div>
+
             <a href="{{ url_for('transactions') }}" class="dashboard-view-all">
                 View all
                 <i class="fas fa-arrow-right"></i>
@@ -185,58 +179,49 @@
 
         <div class="recent-transaction">
 
-        <div class="recent-icon {{ transaction.type }}">
+            <div class="recent-icon {{ transaction.type }}">
+                {% if transaction.type == "income" %}
+                    <i class="fas fa-arrow-up"></i>
+                {% else %}
+                    <i class="fas fa-arrow-down"></i>
+                {% endif %}
+            </div>
 
-        {% if transaction.type == "income" %}
-            <i class="fas fa-arrow-up"></i>
-        {% else %}
-            <i class="fas fa-arrow-down"></i>
-        {% endif %}
+            <div class="recent-details">
+                <strong>{{ transaction.description }}</strong>
+                <span>{{ transaction.transaction_date }}</span>
+            </div>
 
-        </div>
-
-
-        <div class="recent-details">
-
-        <strong>
-            {{ transaction.description }}
-        </strong>
-
-        <span>
-            {{ transaction.transaction_date }}
-        </span>
-
-        </div>
-
-
-        <strong class="recent-amount
-        {% if transaction.type == 'income' %}
-            positive
-        {% else %}
-            negative
-        {% endif %}
-        ">
-
-        {% if transaction.type == "income" %}
-            +₹{{ transaction.amount }}
-        {% else %}
-            -₹{{ transaction.amount }}
-        {% endif %}
-
-        </strong>
+            <strong class="recent-amount
+                {% if transaction.type == 'income' %}
+                    positive
+                {% else %}
+                    negative
+                {% endif %}
+            ">
+                {% if transaction.type == "income" %}
+                    +₹{{ transaction.amount }}
+                {% else %}
+                    -₹{{ transaction.amount }}
+                {% endif %}
+            </strong>
 
         </div>
 
+        {% else %}
+        <p class="empty-state">No transactions yet. Add your first transaction to get started.</p>
         {% endfor %}
+
     </div>
 
     <!-- AI Insights -->
     <div class="dashboard-card ai-dashboard">
         <div class="dashboard-card-header">
             <div>
-                <h3>AI Insights</h3>
-                <p>Personalized for your finances</p>
+                <h3>Financial Insights</h3>
+                <p>Your financial activity</p>
             </div>
+
             <div class="ai-small-icon">
                 <i class="fas fa-sparkles"></i>
             </div>
@@ -246,33 +231,38 @@
             <div class="ai-main-icon">
                 <i class="fas fa-lightbulb"></i>
             </div>
-            <h4>You're doing great!</h4>
+
+            <h4>Your finances at a glance</h4>
+
             <p>
-                Your spending is lower than last month.
-                You could save an additional
-                <strong>₹2,500</strong> by reducing your
-                dining and shopping expenses.
+                Keep tracking your income and expenses to understand
+                your spending habits and make better financial decisions.
             </p>
-            <button class="ai-action-btn">
-                View insights
+
+            <a href="{{ url_for('analytics') }}" class="ai-action-btn">
+                View analytics
                 <i class="fas fa-arrow-right"></i>
-            </button>
+            </a>
         </div>
     </div>
 
 </div>
 
 <!-- ============================================
-     SCRIPTS
+     CHART DATA
 ============================================ -->
 <script id="cashflow-data" type="application/json">
     {{ cashflow_data | tojson }}
 </script>
+
 <script id="spending-data" type="application/json">
     {{ spending_data | tojson }}
 </script>
+
+<!-- ============================================
+     SCRIPTS
+============================================ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/dashboard-charts.js') }}"></script>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 {% endblock %}

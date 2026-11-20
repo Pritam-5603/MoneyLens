@@ -22,7 +22,7 @@ def get_db_connection():
             "ssl_verify_cert": True,
             "ssl_verify_identity": True
         })
-
+    connection_config["connection_timeout"] = 10
     connection = mysql.connector.connect(**connection_config)
 
     return connection
